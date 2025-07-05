@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Karak Prototype - Modern UI</title>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.3/dist/full.min.css" rel="stylesheet" type="text/css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dungeon: '#1a202c',
+            gold: '#d4af37',
+            stone: '#718096',
+            moss: '#48bb78'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body>
+<div class="container">
+  <header class="navbar">
+    <h1>Karak Web</h1>
+    <h4 id="roundInfo"></h4>
+  </header>
+  <div class="controls">
+    <button id="drawTile">Draw Tile</button>
+    <button id="rollDice">Roll Dice</button>
+    <button id="endTurn">End Turn</button>
+    <button id="drawEventTile">Draw Event Tile</button>
+    <br>
+    <button id="rotateLeft">Rotate Left</button>
+    <button id="rotateRight">Rotate Right</button>
+    <div id="class-selection">
+      <h2>Select Your Class</h2>
+      <button class="class-options" data-class="knight">Knight</button>
+      <button class="class-options" data-class="mage">Mage</button>
+    </div>
+  </div>
+  <main class="viewport">
+    <div id="player-info">
+    </div>
+    <div id="gameContainer" style="display: flex;">
+      <div id="board"></div>
+      <div id="tile-preview" style="position: absolute; top: 10px; left: 10px; z-index: 9999; display: none;">
+        <img id="preview-image" src="" style="width: 64px; height: 64px;"  alt="xd"/>
+        <p id="preview-description"></p>
+      </div>
+      <div id="gameLog" style="width: 300px; height: 600px; overflow-y: auto; border-left: 1px solid #ccc; padding: 10px; font-family: monospace; background-color: #f9f9f9;">
+        <h3>Game Log</h3>
+        <ul id="logEntries" style="list-style: none; padding-left: 0;"></ul>
+      </div>
+    </div>
+  </main>
+  <footer class="footer">
+    <a href="#">About</a> | <a href="#">Rules</a> | <a href="#">Contact</a>
+  </footer>
+</div>
+
+<script type="module" src="scripts/game/gameState.js"></script>
+<script type="module" src="scripts/game/tileManager.js"></script>
+<script type="module" src="scripts/game/eventManager.js"></script>
+<script type="module" src="scripts/game/characterManager.js"></script>
+<script type="module" src="scripts/game/inventoryManager.js"></script>
+<script type="module" src="scripts/game/gameLogic.js"></script>
+<script type="module" src="scripts/ui/renderer.js"></script>
+<script type="module" src="scripts/ui/uiManager.js"></script>
+<script type="module" src="scripts/ui/uiEvents.js"></script>
+<script type="module" src="scripts/utils/helpers.js"></script>
+<script type="module">
+    import {initGame} from './scripts/game/gameLogic.js';
+    import {initUI} from './scripts/ui/uiEvents.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initGame();
+        initUI();
+    });
+</script>
+</body>
+</html>

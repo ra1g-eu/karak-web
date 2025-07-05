@@ -2,8 +2,9 @@ import {GameState} from './gameState.js';
 import {createTileDeck, validateConnections} from './tileManager.js';
 import {characterClasses} from './characterManager.js';
 import {logEvent} from '../utils/helpers.js';
+import {resetInventory} from "./inventoryManager.js";
 
-export const tileDeck = createTileDeck();
+export const tileDeck = createTileDeck(100);
 const BOARD_WIDTH = 1024;
 const BOARD_HEIGHT = 590;
 export const TILE_SIZE = 64;
@@ -73,4 +74,14 @@ export function selectClass(playerId, classKey) {
     player.image = cls.image;
 
     logEvent(`${player.name} chose the ${cls.name} class`);
+}
+
+export function reducePlayerHealth(player, amount) {
+    player.hp -= amount;
+    if (player.hp <= 0) {
+        player.hp = 0;
+        player.isDead = true;
+        logEvent(`${player.name} has been defeated!`);
+        resetInventory(player);
+    }
 }

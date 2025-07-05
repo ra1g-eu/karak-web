@@ -1,66 +1,288 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Karak Prototype - Modern UI</title>
-  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.3/dist/full.min.css" rel="stylesheet" type="text/css" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            dungeon: '#1a202c',
-            gold: '#d4af37',
-            stone: '#718096',
-            moss: '#48bb78'
-          }
-        }
-      }
-    }
-  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karak Prototype - Modern UI</title>
+    <link href="./css/daisyui@5.css" rel="stylesheet" type="text/css"/>
+    <link href="./css/styles.css" rel="stylesheet" type="text/css"/>
+    <link href="./css/themes.css" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" href="./css/fontawesome.min.css" type="text/css"/>
+    <script src="./scripts/tailwind.js"></script>
+    <script src="./scripts/fontawesome.min.js"></script>
 </head>
-<body>
-<div class="container">
-  <header class="navbar">
-    <h1>Karak Web</h1>
-    <h4 id="roundInfo"></h4>
-  </header>
-  <div class="controls">
-    <button id="drawTile">Draw Tile</button>
-    <button id="rollDice">Roll Dice</button>
-    <button id="endTurn">End Turn</button>
-    <button id="drawEventTile">Draw Event Tile</button>
-    <br>
-    <button id="rotateLeft">Rotate Left</button>
-    <button id="rotateRight">Rotate Right</button>
-    <div id="class-selection">
-      <h2>Select Your Class</h2>
-      <button class="class-options" data-class="knight">Knight</button>
-      <button class="class-options" data-class="mage">Mage</button>
+<body class="flex flex-col min-h-screen p-4">
+<!-- Top Navigation Bar -->
+<header class="navbar bg-base-200 rounded-box mb-4 shadow-lg">
+    <div class="navbar-start">
+        <div class="flex items-center">
+            <i class="fas fa-dungeon text-3xl text-yellow-600 mr-2"></i>
+            <h1 class="text-2xl font-bold dungeon-text">Karak Dungeon</h1>
+        </div>
     </div>
-  </div>
-  <main class="viewport">
-    <div id="player-info">
+
+    <div class="navbar-center">
+        <div class="flex items-center bg-base-300 px-4 py-2 rounded-full">
+            <i class="fas fa-user text-yellow-500 mr-2"></i>
+            <span class="font-semibold">Round: <span id="roundInfo" class="text-yellow-400">1</span></span>
+            <span class="mx-3">|</span>
+            <span class="font-semibold">Turn: <span id="turnInfo" class="text-green-400">ra1g</span></span>
+        </div>
     </div>
-    <div id="gameContainer" style="display: flex;">
-      <div id="board"></div>
-      <div id="tile-preview" style="position: absolute; top: 10px; left: 10px; z-index: 9999; display: none;">
-        <img id="preview-image" src="" style="width: 64px; height: 64px;"  alt="xd"/>
-        <p id="preview-description"></p>
-      </div>
-      <div id="gameLog" style="width: 300px; height: 600px; overflow-y: auto; border-left: 1px solid #ccc; padding: 10px; font-family: monospace; background-color: #f9f9f9;">
-        <h3>Game Log</h3>
-        <ul id="logEntries" style="list-style: none; padding-left: 0;"></ul>
-      </div>
+
+    <div class="navbar-end">
+        <button class="btn btn-accent mr-2">
+            <i class="fas fa-save mr-2"></i> Save Game
+        </button>
+        <button class="btn btn-primary">
+            <i class="fas fa-cog mr-2"></i> Settings
+        </button>
     </div>
-  </main>
-  <footer class="footer">
-    <a href="#">About</a> | <a href="#">Rules</a> | <a href="#">Contact</a>
-  </footer>
+</header>
+
+<!-- Main Game Container -->
+<div class="game-container flex-grow flex flex-col lg:flex-row p-4 mb-4">
+    <!-- Left Panel - Player Info -->
+    <div class="w-full lg:w-1/4 bg-base-300 rounded-xl p-4 mb-4 lg:mb-0 lg:mr-4 flex flex-col">
+        <h2 class="text-xl font-bold mb-4 dungeon-text text-center">
+            <i class="fas fa-user-shield mr-2"></i>Player Information
+        </h2>
+
+        <div id="player-info" class="flex-grow bg-base-200 rounded-xl p-4">
+            <div id="player-stats">
+                <div class="text-center py-10">
+                    <i class="fas fa-user text-5xl text-gray-500 mb-4"></i>
+                    <p class="text-gray-500">Player information will appear here</p>
+                </div>
+            </div>
+            <div>
+                <h4 class="font-bold mb-2">Inventory</h4>
+                <div id="inventory-container" class="grid grid-cols-2 gap-3">
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4 bg-base-200 rounded-xl p-4">
+            <h3 class="font-bold mb-2 dungeon-text">
+                <i class="fas fa-trophy mr-2"></i>Player Stats
+            </h3>
+            <div class="stats stats-vertical lg:stats-horizontal shadow bg-base-100">
+                <div class="stat">
+                    <div class="stat-title">Health</div>
+                    <div class="stat-value text-green-500" id="player-health">5/5</div>
+                    <div class="stat-desc">Max HP: <span id="player-max-health">5</span></div>
+                </div>
+                <div class="stat">
+                    <div class="stat-title">Actions</div>
+                    <div class="stat-value text-yellow-500">2</div>
+                    <div class="stat-desc">Remaining</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Center Panel - Game Board -->
+    <div class="w-full lg:w-2/4 flex flex-col">
+        <div class="bg-base-300 rounded-xl p-4 mb-4">
+            <h2 class="text-xl font-bold mb-2 dungeon-text text-center">
+                <i class="fas fa-chess-board mr-2"></i>Dungeon Board
+            </h2>
+            <div id="board-container" class="relative rounded-lg overflow-hidden">
+                <div id="board" class="board"></div>
+            </div>
+        </div>
+
+        <!-- Game Controls -->
+        <div class="bg-base-300 rounded-xl p-4">
+            <h3 class="font-bold mb-3 dungeon-text">
+                <i class="fas fa-gamepad mr-2"></i>Game Controls
+            </h3>
+            <div class="flex flex-wrap justify-center gap-2">
+                <button id="drawTile" class="btn btn-primary">
+                    <i class="fas fa-plus-square mr-2"></i>Draw Tile
+                </button>
+                <button id="drawEventTile" class="btn btn-secondary">
+                    <i class="fas fa-dragon mr-2"></i>Draw Event
+                </button>
+                <button id="endTurn" class="btn btn-success">
+                    <i class="fas fa-flag-checkered mr-2"></i>End Turn
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-base-300 rounded-xl p-4 mt-4" id="place-tile-div" style="display: none">
+            <h3 class="font-bold text-xl dungeon-text mb-4">
+                <i class="fas fa-puzzle-piece mr-2"></i>Place Your Tile
+            </h3>
+            <div class="flex flex-col items-center">
+                <img id="preview-image" src="" alt="Tile Preview" class="w-24 h-24 object-contain mb-2">
+                <div class="flex gap-2 mb-2">
+                    <button id="modalRotateLeft" class="btn btn-accent">
+                        <i class="fas fa-undo mr-2"></i>Rotate Left
+                    </button>
+                    <button id="modalRotateRight" class="btn btn-accent">
+                        <i class="fas fa-redo mr-2"></i>Rotate Right
+                    </button>
+                </div>
+                <p class="text-sm text-gray-400">Rotate the tile according to your needs, then place it on the
+                    board.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Panel - Game Log -->
+    <div class="w-full lg:w-1/4 bg-base-300 rounded-xl p-4 mt-4 lg:mt-0 lg:ml-4">
+        <h2 class="text-xl font-bold mb-4 dungeon-text text-center">
+            <i class="fas fa-scroll mr-2"></i>Game Log
+        </h2>
+        <div class="bg-base-200 rounded-xl h-96 overflow-y-auto p-3">
+            <ul id="logEntries" class="space-y-2"></ul>
+        </div>
+
+        <div class="mt-4">
+            <h3 class="font-bold mb-2 dungeon-text">
+                <i class="fas fa-cubes mr-2"></i>Tile Deck
+            </h3>
+            <div class="stats shadow bg-base-100">
+                <div class="stat">
+                    <div class="stat-title">Tiles Remaining</div>
+                    <div class="stat-value text-yellow-500" id="tiles-remaining">42</div>
+                    <div class="stat-desc">in the deck</div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Class Selection Modal -->
+<div id="class-selection">
+    <dialog id="classModal" class="modal">
+        <div class="modal-box bg-base-300">
+            <h3 class="font-bold text-xl dungeon-text text-center">
+                <i class="fas fa-hat-wizard mr-2"></i>Choose Your Class
+            </h3>
+            <div class="flex flex-col md:flex-row gap-4 my-6">
+                <div class="class-card bg-base-200 rounded-xl p-4 flex-1 text-center">
+                    <div class="avatar mb-2">
+                        <div class="w-24 rounded-full mx-auto">
+                            <img src="./images/knight.png" alt="Knight">
+                        </div>
+                    </div>
+                    <h4 class="font-bold text-lg mb-2">Knight</h4>
+                    <p class="mb-4">The Knight can reroll dice in combat and reincarnates at the starting point upon
+                        death.</p>
+                    <button class="btn btn-primary w-full class-options" data-class="knight">
+                        <i class="fas fa-shield-alt mr-2"></i>Select Knight
+                    </button>
+                </div>
+
+                <div class="class-card bg-base-200 rounded-xl p-4 flex-1 text-center">
+                    <div class="avatar mb-2">
+                        <div class="w-24 rounded-full mx-auto">
+                            <img src="./images/mage.png" alt="Mage">
+                        </div>
+                    </div>
+                    <h4 class="font-bold text-lg mb-2">Mage</h4>
+                    <p class="mb-4">The Mage can swap positions with another player and sacrifice HP for increased
+                        strength.</p>
+                    <button class="btn btn-secondary w-full class-options" data-class="mage">
+                        <i class="fas fa-magic mr-2"></i>Select Mage
+                    </button>
+                </div>
+            </div>
+        </div>
+    </dialog>
+</div>
+
+<dialog id="tileModal" class="modal">
+    <div class="modal-box bg-base-300">
+        <h3 class="font-bold text-xl dungeon-text mb-4">
+            <i class="fas fa-puzzle-piece mr-2"></i>Place Your Tile
+        </h3>
+        <div class="flex flex-col items-center">
+            <img src="" alt="Tile Preview" class="w-32 h-32 object-contain mb-4">
+            <p id="preview-description" class="mb-4 text-center">Connections: north, south, east, west</p>
+            <div class="flex gap-2 mb-4">
+                <button class="btn btn-accent">
+                    <i class="fas fa-undo mr-2"></i>Rotate Left
+                </button>
+                <button class="btn btn-accent">
+                    <i class="fas fa-redo mr-2"></i>Rotate Right
+                </button>
+            </div>
+            <p class="text-sm text-gray-400 mb-4">Rotate the tile according to your needs. Click "Confirm Tile" to place
+                on the board.</p>
+        </div>
+        <div class="modal-action">
+            <button id="cancelPlacement" class="btn btn-error">
+                <i class="fas fa-times mr-2"></i>Cancel
+            </button>
+            <button id="confirmPlacement" class="btn btn-success">
+                <i class="fas fa-check mr-2"></i>Confirm tile
+            </button>
+        </div>
+    </div>
+</dialog>
+
+<!-- Information Modal -->
+<dialog id="infoModal" class="modal">
+    <div class="modal-box bg-base-300">
+        <h3 class="font-bold text-lg dungeon-text">
+            <i class="fas fa-question-circle mr-2"></i><span id="infoModalTitle">Confirm Your Action</span>
+        </h3>
+        <p id="infoModalMessage" class="py-4">Are you sure you want to perform this action?</p>
+        <div class="modal-action">
+            <button id="infoModalDismiss" class="btn btn-info">
+                <i class="fas fa-check mr-2"></i>Understood
+            </button>
+        </div>
+    </div>
+</dialog>
+
+<!-- Inv Item Modal -->
+<dialog id="invItemModal" class="modal">
+    <div class="modal-box bg-base-300">
+        <h3 class="font-bold text-lg dungeon-text">
+            <i class="fas fa-question-circle mr-2"></i><span id="invItemModalTitle">Confirm Your Action</span>
+        </h3>
+        <p id="invItemModalMessage" class="py-4">Are you sure you want to perform this action?</p>
+        <div class="modal-action">
+            <button id="invItemModalDismiss" class="btn btn-info">
+                <i class="fas fa-check mr-2"></i>Understood
+            </button>
+            <button id="invItemModalDelete" class="btn btn-error">
+                <i class="fas fa-trash mr-2"></i>Delete item
+            </button>
+        </div>
+    </div>
+</dialog>
+
+<!-- Confirmation Modal -->
+<dialog id="confirmationModal" class="modal">
+    <div class="modal-box bg-base-300">
+        <h3 id="confirmationModalTitle" class="font-bold text-lg dungeon-text">
+            <i class="fas fa-question-circle mr-2"></i>Confirm Your Action
+        </h3>
+        <p id="confirmationModalMessage" class="py-4">Are you sure you want to perform this action?</p>
+        <div class="modal-action">
+            <button id="confirmationModalConfirmNo" class="btn btn-error">
+                <i class="fas fa-times mr-2"></i>Cancel
+            </button>
+            <button id="confirmationModalConfirmYes" class="btn btn-success">
+                <i class="fas fa-check mr-2"></i>Confirm
+            </button>
+        </div>
+    </div>
+</dialog>
+
+<!-- Footer -->
+<footer class="footer footer-center p-4 bg-base-200 rounded-box text-base-content">
+    <aside>
+        <p class="dungeon-text">
+            <i class="fas fa-dragon mr-2"></i>Karak Dungeon Prototype
+        </p>
+    </aside>
+</footer>
 
 <script type="module" src="scripts/game/gameState.js"></script>
 <script type="module" src="scripts/game/tileManager.js"></script>
@@ -72,13 +294,14 @@
 <script type="module" src="scripts/ui/uiManager.js"></script>
 <script type="module" src="scripts/ui/uiEvents.js"></script>
 <script type="module" src="scripts/utils/helpers.js"></script>
+<script type="module" src="scripts/ui/customModals.js"></script>
 <script type="module">
     import {initGame} from './scripts/game/gameLogic.js';
     import {initUI} from './scripts/ui/uiEvents.js';
 
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
         initGame();
-        initUI();
+        await initUI();
     });
 </script>
 </body>

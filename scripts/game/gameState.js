@@ -1,4 +1,3 @@
-import { characterClasses } from './characterManager.js';
 import { emptySlot, sword, goldenKey } from './inventoryManager.js';
 
 export const GameState = {

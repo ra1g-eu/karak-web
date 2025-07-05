@@ -1,4 +1,8 @@
-import { logEvent } from '../utils/helpers.js';
+import {elementId, logEvent} from '../utils/helpers.js';
+import {addItemToInventory} from "./inventoryManager.js";
+import {reducePlayerHealth} from "./gameLogic.js";
+import {updatePlayerInfo} from "../ui/renderer.js";
+import {awaitPlayerDecision, awaitPlayerDecisionDropdown} from "../ui/customModals.js";
 
 export const eventTiles = [
     {
@@ -15,6 +19,8 @@ export const eventTiles = [
                 return true;
             } else {
                 logEvent(`${player.name} was defeated. The monster remains.`);
+                reducePlayerHealth(player, 1);
+                updatePlayerInfo(player);
                 return false;
             }
         }
@@ -23,12 +29,36 @@ export const eventTiles = [
         id: 'treasureChest',
         image: 'images/chest.png',
         name: 'Treasure Chest',
-        onEnter(player) {
+        async onEnter(player) {
             logEvent(`${player.name} found a treasure chest!`);
             const collected = Math.random() > 0.2;
 
             if (collected) {
-                logEvent(`${player.name} collected the treasure!`);
+                let {wasItemAdded, randomItem} = addItemToInventory('key', player);
+                if (!wasItemAdded) {
+                    //let the player remove an item from inventory if they wish, by showing a dialog window with all inventory items and a button to remove them
+                    //await decision and then attempt to addItemToInventory('key', player, randomItem);
+                    //if fails, continue and drop item
+                    const confirmed = await awaitPlayerDecisionDropdown(
+                        elementId(player.id),
+                        'Inventory full',
+                        'Remove an item from your inventory to make room for the key.',
+                    );
+
+                    if (confirmed) {
+                        let {wasItemAdded2, randomItem2} = addItemToInventory('key', player, randomItem);
+                        if (wasItemAdded2) {
+                            logEvent(`${player.name} collected the treasure!`);
+                        } else {
+                            logEvent(`${player.name} couldn't open the chest. It remains.`);
+                            return false;
+                        }
+                    } else {
+                        logEvent(`${player.name} couldn't open the chest. It remains.`);
+                        return false;
+                    }
+                }
+                updatePlayerInfo(player);
                 return true;
             } else {
                 logEvent(`${player.name} couldn't open the chest. It remains.`);

@@ -32,16 +32,15 @@ export const tileTypes = {
 };
 
 export class TileDeck {
-    constructor(tiles) {
+    constructor(tiles, tileCount) {
         this.tiles = [];
-        this.initializeDeck(tiles);
+        this.initializeDeck(tiles, tileCount);
     }
 
-    initializeDeck(tiles) {
-        const tileCount = Math.floor(Math.random() * 96 + 5);
+    initializeDeck(tiles, tileCount) {
         this.tiles = [...tiles];
 
-        for (let i = 0; i < tileCount - tiles.length; i++) {
+        for (let i = 0; i <= tileCount - tiles.length; i++) {
             const index = Math.floor(Math.random() * tiles.length);
             this.tiles.push(tiles[index]);
         }
@@ -91,6 +90,10 @@ export function validateConnections(tile, position, rotation, map) {
     return true;
 }
 
-export function createTileDeck() {
-    return new TileDeck(Object.values(tileTypes));
+export function createTileDeck(tileCount) {
+    return new TileDeck(Object.values(tileTypes), tileCount);
+}
+
+export function getTileCountInDeck(tileDeck) {
+    return tileDeck.tiles.length;
 }

@@ -16,15 +16,23 @@ export function rotateDirection(dir, rotations) {
 }
 
 export function logEvent(message) {
-    const logList = document.getElementById('logEntries');
+    const logList = elementId('logEntries');
     const listItem = document.createElement('li');
+    listItem.className = 'log-entry bg-base-100 p-2 rounded-md';
+
     const now = new Date();
     const timestamp = now.toLocaleTimeString('en-US', {
         hour: '2-digit',
         minute: '2-digit'
     });
 
-    listItem.textContent = `[${timestamp}] ${message}`;
+    listItem.innerHTML = `
+                <div class="flex align-middle">
+                    <span class="text-yellow-500 font-mono w-24">[${timestamp}]</span>
+                    <span class="">${message}</span>
+                </div>
+            `;
+
     logList.appendChild(listItem);
     logList.scrollTop = logList.scrollHeight;
 }

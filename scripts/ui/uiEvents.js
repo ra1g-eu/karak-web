@@ -6,12 +6,14 @@ import {
     handlePlayerMovement,
     endPlayerTurn,
     rotatePreview,
-    hideTilePreview
+    showTilePreview, hideTilePreview
 } from './uiManager.js';
 import {highlightTiles, renderBoard, updatePlayerInfo, clearHighlights} from './renderer.js';
-import {selectClass, TILE_SIZE} from '../game/gameLogic.js';
-import {logEvent} from '../utils/helpers.js';
+import {getAccessibleTiles, selectClass, TILE_SIZE, tileDeck} from '../game/gameLogic.js';
+import {elementId, elementsByClass, logEvent} from '../utils/helpers.js';
 import {offsetX, offsetY} from './renderer.js';
+import {showConfirmModal, showInfoModal} from "./customModals.js";
+import {getTileCountInDeck} from "../game/tileManager.js";
 
 // State management for UI
 let currentTile = null;
@@ -19,50 +21,69 @@ let placingTile = false;
 let placingEvent = false;
 let currentRotation = 0;
 let currentAccessibleTiles = [];
+export const confirmationModal = elementId('confirmationModal');
+export const tileModal = elementId('tileModal');
+//export const classModal = elementId('classModal');
+export const classSelection = elementId('class-selection');
 
-export function initUI() {
-    setupEventListeners();
+export async function initUI() {
+    await setupEventListeners();
     updatePlayerInfo(GameState.getCurrentPlayer());
     renderBoard();
 }
 
-function setupEventListeners() {
+async function setupEventListeners() {
     // Rotation controls
-    document.getElementById('rotateLeft').addEventListener('click', () => {
+    elementId('modalRotateLeft').addEventListener('click', () => {
         rotatePreview('left');
         currentRotation = (currentRotation - 90 + 360) % 360;
     });
 
-    document.getElementById('rotateRight').addEventListener('click', () => {
+    elementId('modalRotateRight').addEventListener('click', () => {
         rotatePreview('right');
         currentRotation = (currentRotation + 90) % 360;
     });
 
+    updateTileDeckCount();
+
     // Tile drawing
-    document.getElementById('drawTile').addEventListener('click', handleDrawTile);
+    elementId('drawTile').addEventListener('click', handleDrawTile);
 
     // Event tile placement
-    document.getElementById('drawEventTile').addEventListener('click', handleDrawEventTile);
+    elementId('drawEventTile').addEventListener('click', handleDrawEventTile);
 
     // Turn ending
-    document.getElementById('endTurn').addEventListener('click', handleEndTurn);
+    elementId('endTurn').addEventListener('click', handleEndTurn);
 
     // Board interactions
-    const boardEl = document.getElementById('board');
+    const boardEl = elementId('board');
     boardEl.addEventListener('click', handleBoardClick);
     boardEl.addEventListener('contextmenu', handleBoardRightClick);
 
     // Keyboard movement
-    document.addEventListener('keydown', handleKeyPress);
+    document.addEventListener('keydown', await handleKeyPress);
 
     // Class selection
-    document.querySelectorAll('.class-options').forEach(btn => {
+    elementsByClass('.class-options').forEach(btn => {
         btn.addEventListener('click', () => {
+            classModal.close();
             selectClass(GameState.getCurrentPlayer().id, btn.dataset.class);
-            document.getElementById('class-selection').style.display = 'none';
             updatePlayerInfo(GameState.getCurrentPlayer());
         });
     });
+
+    setTimeout(() => {
+        classModal.showModal();
+    }, 500);
+}
+
+function updateRoundInfo() {
+    elementId('roundInfo').textContent = `${GameState.round}`;
+    elementId('turnInfo').textContent = `${GameState.getCurrentPlayer().name}`;
+}
+
+function updateTileDeckCount() {
+    elementId('tiles-remaining').textContent = getTileCountInDeck(tileDeck);
 }
 
 function handleDrawTile() {
@@ -71,6 +92,9 @@ function handleDrawTile() {
         alert('No more tiles in the deck!');
     } else {
         placingTile = true;
+        highlightTiles(getAccessibleTiles(GameState.getCurrentPlayer()));
+        showTilePreview(currentTile);
+        updateTileDeckCount();
     }
 }
 
@@ -90,7 +114,7 @@ function handleDrawEventTile() {
 }
 
 function handleBoardClick(e) {
-    const boardEl = document.getElementById('board');
+    const boardEl = elementId('board');
     const rect = boardEl.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const clickY = e.clientY - rect.top;
@@ -99,14 +123,25 @@ function handleBoardClick(e) {
     const key = `${gridX},${gridY}`;
 
     if (placingTile && currentTile) {
-        if (placeTileOnBoard(currentTile, gridX, gridY, currentRotation)) {
-            placingTile = false;
-            currentTile = null;
-            hideTilePreview();
-            renderBoard();
-        } else {
-            alert("Cannot place tile here. Check connections.");
-        }
+        // Example: Confirming deletion
+        showConfirmModal(
+            'Place tile',
+            'Are you sure you want to place this tile?',
+            () => {
+                if (placeTileOnBoard(currentTile, gridX, gridY, currentRotation)) {
+                    placingTile = false;
+                    currentTile = null;
+                    hideTilePreview();
+                    renderBoard();
+                } else {
+                    alert("Cannot place tile here. Check connections.");
+                }
+            },
+            () => {
+                console.log('Canceled: Deletion aborted.');
+                // Optional cleanup
+            }
+        );
     } else if (placingEvent && currentTile) {
         // Check if tile is accessible
         const isAccessible = currentAccessibleTiles.some(
@@ -150,15 +185,20 @@ function handleBoardClick(e) {
 }
 
 function handleEndTurn() {
+    if (placingTile || placingEvent) {
+        showInfoModal('Error', 'Please finish tile placement before ending turn.');
+        return;
+    }
     const player = endPlayerTurn();
     if (!player.class) {
-        document.getElementById('class-selection').style.display = 'block';
+        classModal.showModal();
     }
+    updateRoundInfo();
 }
 
 function handleBoardRightClick(e) {
     e.preventDefault();
-    const boardEl = document.getElementById('board');
+    const boardEl = elementId('board');
     const rect = boardEl.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const clickY = e.clientY - rect.top;
@@ -172,7 +212,7 @@ function handleBoardRightClick(e) {
     }
 }
 
-function handleKeyPress(e) {
+async function handleKeyPress(e) {
     const keyMap = {
         'ArrowUp': {dx: 0, dy: -1},
         'w': {dx: 0, dy: -1},
@@ -190,7 +230,7 @@ function handleKeyPress(e) {
 
     if (keyMap[e.key]) {
         const {dx, dy} = keyMap[e.key];
-        if (handlePlayerMovement(dx, dy)) {
+        if (await handlePlayerMovement(dx, dy)) {
             renderBoard();
             updatePlayerInfo(GameState.getCurrentPlayer());
         }

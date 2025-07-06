@@ -8,20 +8,22 @@ import {
 import {updatePlayerInfo} from './renderer.js';
 import {elementId, logEvent} from '../utils/helpers.js';
 import {tileDeck} from '../game/gameLogic.js';
+import {validateTileConnection} from "../game/tileManager.js";
+import {showInfoModal} from "./customModals.js";
 
-export function showTilePreview(tile) {
-    const preview = elementId('place-tile-div');
-    const img = elementId('preview-image');
+export function showTilePreview(tile, previewDivId) {
+    const preview = elementId(previewDivId);
+    const img = elementId(previewDivId + '-image');
     img.src = tile.image;
     preview.style.display = 'block';
 }
 
-export function hideTilePreview() {
-    elementId('place-tile-div').style.display = 'none';
+export function hideTilePreview(tileId) {
+    elementId(tileId).style.display = 'none';
 }
 
-export function rotatePreview(direction) {
-    const img = elementId('preview-image');
+export function rotatePreview(direction, previewDivImageId) {
+    const img = elementId(previewDivImageId);
     const currentRotation = parseInt(img.style.transform.replace('rotate(', '').replace('deg)', '')) || 0;
     const newRotation = direction === 'left' ? currentRotation - 90 : currentRotation + 90;
     img.style.transform = `rotate(${newRotation}deg)`;
@@ -59,22 +61,34 @@ export function placeEventTile() {
 
 export async function handlePlayerMovement(dx, dy) {
     const player = GameState.getCurrentPlayer();
-    const newPos = {
-        x: player.position.x + dx,
-        y: player.position.y + dy
-    };
-    const key = `${newPos.x},${newPos.y}`;
+    const currentPos = player.position;
+    const newPos = {x: currentPos.x + dx, y: currentPos.y + dy};
+    const currentKey = `${currentPos.x},${currentPos.y}`;
+    const newKey = `${newPos.x},${newPos.y}`;
 
-    if (!GameState.map.has(key)) return false;
+    // Check if target tile exists
+    if (!GameState.map.has(newKey)) return false;
+
+    // Check movement distance limit
     if (!isWithinDistance(player.startPosition, newPos, 4)) return false;
 
+    // Get both tiles
+    const currentTileData = GameState.map.get(currentKey);
+    const newTileData = GameState.map.get(newKey);
+
+    // Validate connection between tiles
+    if (!validateTileConnection(currentTileData, newTileData, dx, dy)) {
+        showInfoModal("Error", "No valid connection between tiles!");
+        return false;
+    }
+
+    // Update player position
     player.position = newPos;
 
     // Handle tile events
-    const tile = GameState.map.get(key);
-    if (tile.event) {
-        const eventRemoved = await tile.event.onEnter(player);
-        if (eventRemoved) delete tile.event;
+    if (newTileData.event) {
+        const eventRemoved = await newTileData.event.onEnter(player);
+        if (eventRemoved) delete newTileData.event;
     }
 
     return true;

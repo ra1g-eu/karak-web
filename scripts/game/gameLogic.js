@@ -61,7 +61,7 @@ export function canPlaceTile(playerPos, targetPos, tile, rotation) {
     return !GameState.map.has(key) &&
         isWithinDistance(playerPos, targetPos, 4) &&
         hasAdjacentTile(targetPos.x, targetPos.y) &&
-        validateConnections(tile, targetPos, rotation, GameState.map);
+        validateConnections(tile, targetPos, rotation, GameState.map, playerPos);
 }
 
 export function selectClass(playerId, classKey) {

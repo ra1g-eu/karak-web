@@ -28,8 +28,8 @@ export function drawTileElement(x, y, tile, rotation) {
 export function drawEventElement(x, y, event) {
     const el = document.createElement('div');
     el.className = 'event';
-    el.style.left = `${(x * TILE_SIZE) + offsetX}px`;
-    el.style.top = `${(y * TILE_SIZE) + offsetY}px`;
+    el.style.left = `${(x * TILE_SIZE) + offsetX + 9}px`;
+    el.style.top = `${(y * TILE_SIZE) + offsetY + 6}px`;
     el.style.backgroundImage = `url(${event.image})`;
     el.style.zIndex = "2";
     boardEl.appendChild(el);
@@ -66,6 +66,7 @@ export function renderBoard() {
 
 export function updatePlayerInfo(player) {
     drawPlayerElement(player);
+    player = GameState.updateCurrentPlayer(player);
     const statsPanel = elementId('player-stats');
     const infoPanel = elementId('player-info');
 
@@ -96,7 +97,7 @@ export function updatePlayerInfo(player) {
     statsPanel.innerHTML = `<div class="flex items-center mb-4">
                             <div class="avatar">
                                 <div class="w-16 rounded-full">
-                                    <img src="${player.image ? player.image : 'images/skeleton.png'}" alt="${player.class}">
+                                    <img src="${player.image ? player.image : 'images/monsters/monster_skeleton.png'}" alt="${player.class}">
                                 </div>
                             </div>
                             <div class="ml-4">
@@ -115,6 +116,8 @@ export function updatePlayerInfo(player) {
     elementId('player-max-health').textContent = player.maxHp;
 
     infoPanel.append(inventoryDiv);
+
+    return player;
 }
 
 export function highlightTiles(tiles) {
@@ -170,7 +173,9 @@ function createInventoryItem(player, item, type, index = null) {
 <p>Item type: ${itemType.name}</p>
 ${item.damage ? `<p>Damage: <span class="font-bold text-yellow-500">${item.damage}</span></p>` : ''}
 ${item.manaCost ? `<p>Mana cost: <span class="font-bold text-yellow-500">${item.manaCost}</span></p>` : ''}
-<p>${item.description}</p>`, () => {
+<p>${item.description}</p>
+<p><img class="game_item_image" src="${item.image}" alt="${item.name}"></p>
+`, () => {
                 removeItemFromInventory(player, type, item.id);
             });
         });

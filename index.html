@@ -110,12 +110,22 @@
             </div>
         </div>
 
+        <div class="bg-base-300 rounded-xl p-4 mt-4" id="place-event-tile-div" style="display: none">
+            <h3 class="font-bold text-xl dungeon-text mb-4">
+                <i class="fas fa-puzzle-piece mr-2"></i>Place Your Event Tile
+            </h3>
+            <div class="flex flex-col items-center">
+                <img id="place-event-tile-div-image" src="" alt="Tile Preview" class="w-24 h-24 object-contain mb-2">
+                <p class="text-sm text-gray-400">Event tiles can only be placed inside of rooms.</p>
+            </div>
+        </div>
+
         <div class="bg-base-300 rounded-xl p-4 mt-4" id="place-tile-div" style="display: none">
             <h3 class="font-bold text-xl dungeon-text mb-4">
                 <i class="fas fa-puzzle-piece mr-2"></i>Place Your Tile
             </h3>
             <div class="flex flex-col items-center">
-                <img id="preview-image" src="" alt="Tile Preview" class="w-24 h-24 object-contain mb-2">
+                <img id="place-tile-div-image" src="" alt="Tile Preview" class="w-24 h-24 object-contain mb-2">
                 <div class="flex gap-2 mb-2">
                     <button id="modalRotateLeft" class="btn btn-accent">
                         <i class="fas fa-undo mr-2"></i>Rotate Left
@@ -165,7 +175,7 @@
                 <div class="class-card bg-base-200 rounded-xl p-4 flex-1 text-center">
                     <div class="avatar mb-2">
                         <div class="w-24 rounded-full mx-auto">
-                            <img src="./images/knight.png" alt="Knight">
+                            <img src="./images/classes/class_knight.png" alt="Knight">
                         </div>
                     </div>
                     <h4 class="font-bold text-lg mb-2">Knight</h4>
@@ -179,7 +189,7 @@
                 <div class="class-card bg-base-200 rounded-xl p-4 flex-1 text-center">
                     <div class="avatar mb-2">
                         <div class="w-24 rounded-full mx-auto">
-                            <img src="./images/mage.png" alt="Mage">
+                            <img src="./images/classes/class_mage.png" alt="Mage">
                         </div>
                     </div>
                     <h4 class="font-bold text-lg mb-2">Mage</h4>
@@ -285,16 +295,17 @@
 </footer>
 
 <script type="module" src="scripts/game/gameState.js"></script>
+<script type="module" src="scripts/game/inventoryManager.js"></script>
 <script type="module" src="scripts/game/tileManager.js"></script>
 <script type="module" src="scripts/game/eventManager.js"></script>
 <script type="module" src="scripts/game/characterManager.js"></script>
-<script type="module" src="scripts/game/inventoryManager.js"></script>
 <script type="module" src="scripts/game/gameLogic.js"></script>
 <script type="module" src="scripts/ui/renderer.js"></script>
 <script type="module" src="scripts/ui/uiManager.js"></script>
 <script type="module" src="scripts/ui/uiEvents.js"></script>
 <script type="module" src="scripts/utils/helpers.js"></script>
 <script type="module" src="scripts/ui/customModals.js"></script>
+<script type="module" src="scripts/game/items.js"></script>
 <script type="module">
     import {initGame} from './scripts/game/gameLogic.js';
     import {initUI} from './scripts/ui/uiEvents.js';

@@ -35,12 +35,12 @@ export async function initUI() {
 async function setupEventListeners() {
     // Rotation controls
     elementId('modalRotateLeft').addEventListener('click', () => {
-        rotatePreview('left');
+        rotatePreview('left', 'place-tile-div-image');
         currentRotation = (currentRotation - 90 + 360) % 360;
     });
 
     elementId('modalRotateRight').addEventListener('click', () => {
-        rotatePreview('right');
+        rotatePreview('right', 'place-tile-div-image');
         currentRotation = (currentRotation + 90) % 360;
     });
 
@@ -93,7 +93,7 @@ function handleDrawTile() {
     } else {
         placingTile = true;
         highlightTiles(getAccessibleTiles(GameState.getCurrentPlayer()));
-        showTilePreview(currentTile);
+        showTilePreview(currentTile, 'place-tile-div');
         updateTileDeckCount();
     }
 }
@@ -109,6 +109,8 @@ function handleDrawEventTile() {
 
     placingEvent = true;
     currentTile = event;
+
+    showTilePreview(event, 'place-event-tile-div');
 
     logEvent(`Drawing event tile: ${event.name}`);
 }
@@ -131,7 +133,7 @@ function handleBoardClick(e) {
                 if (placeTileOnBoard(currentTile, gridX, gridY, currentRotation)) {
                     placingTile = false;
                     currentTile = null;
-                    hideTilePreview();
+                    hideTilePreview('place-tile-div');
                     renderBoard();
                 } else {
                     alert("Cannot place tile here. Check connections.");
@@ -175,6 +177,7 @@ function handleBoardClick(e) {
             placingEvent = false;
             currentTile = null;
             currentAccessibleTiles = [];
+            hideTilePreview('place-event-tile-div');
             clearHighlights();
             renderBoard();
         } else {

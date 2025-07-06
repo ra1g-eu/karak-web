@@ -1,13 +1,15 @@
+import {treasureKey} from "./items.js";
 import {elementId, logEvent} from '../utils/helpers.js';
-import {addItemToInventory} from "./inventoryManager.js";
 import {reducePlayerHealth} from "./gameLogic.js";
 import {updatePlayerInfo} from "../ui/renderer.js";
-import {awaitPlayerDecision, awaitPlayerDecisionDropdown} from "../ui/customModals.js";
+import {awaitPlayerDecisionDropdown} from "../ui/customModals.js";
+import {addItemToInventory, hasItemInInventory, hasSpaceInInventoryForItem} from "./inventoryManager.js";
 
 export const eventTiles = [
     {
         id: 'monsterBattle',
-        image: 'images/skeleton.png',
+        image: 'images/monsters/monster_skeleton.png',
+        image_open: null,
         name: 'Wild Skeleton',
         hp: 8,
         onEnter(player) {
@@ -27,43 +29,49 @@ export const eventTiles = [
     },
     {
         id: 'treasureChest',
-        image: 'images/chest.png',
+        image: 'images/items/item_treasure_chest_closed.png',
+        image_open: 'images/items/item_treasure_chest_open.png',
         name: 'Treasure Chest',
+        drops: treasureKey,
         async onEnter(player) {
             logEvent(`${player.name} found a treasure chest!`);
-            const collected = Math.random() > 0.2;
 
-            if (collected) {
-                let {wasItemAdded, randomItem} = addItemToInventory('key', player);
-                if (!wasItemAdded) {
-                    //let the player remove an item from inventory if they wish, by showing a dialog window with all inventory items and a button to remove them
-                    //await decision and then attempt to addItemToInventory('key', player, randomItem);
-                    //if fails, continue and drop item
-                    const confirmed = await awaitPlayerDecisionDropdown(
-                        elementId(player.id),
-                        'Inventory full',
-                        'Remove an item from your inventory to make room for the key.',
-                    );
-
-                    if (confirmed) {
-                        let {wasItemAdded2, randomItem2} = addItemToInventory('key', player, randomItem);
-                        if (wasItemAdded2) {
-                            logEvent(`${player.name} collected the treasure!`);
-                        } else {
-                            logEvent(`${player.name} couldn't open the chest. It remains.`);
-                            return false;
-                        }
-                    } else {
-                        logEvent(`${player.name} couldn't open the chest. It remains.`);
-                        return false;
-                    }
-                }
-                updatePlayerInfo(player);
-                return true;
-            } else {
+            const hasKeyInInventory = hasItemInInventory(player, treasureKey.type, treasureKey.id);
+            if (Math.random() <= 0.2) {
                 logEvent(`${player.name} couldn't open the chest. It remains.`);
                 return false;
             }
+
+            // Prompt for inventory management
+            const confirmed = await awaitPlayerDecisionDropdown(
+                elementId(player.id),
+                'Pick up the key?',
+                'Make sure to have space in your inventory, then decide.',
+            );
+
+            if (!confirmed) {
+                console.log('Inventory full');
+                logEvent(`${player.name} didn't open the chest. It remains.`);
+                return false;
+            }
+
+            const hasSpace = hasSpaceInInventoryForItem(player, treasureKey.type);
+
+            if (!hasSpace) {
+                console.log('Inventory full');
+                logEvent(`${player.name} didn't open the chest. It remains.`);
+                return false;
+            }
+
+            let {wasItemAdded, randomItem} = addItemToInventory(treasureKey.type, player, treasureKey);
+            if (wasItemAdded) {
+                updatePlayerInfo(player);
+                logEvent(`${player.name} collected the treasure!`);
+                return true;
+            }
+
+            logEvent(`${player.name} couldn't open the chest. It remains.`);
+            return false;
         }
     }
 ];

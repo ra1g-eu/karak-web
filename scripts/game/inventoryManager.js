@@ -1,86 +1,6 @@
 import {updatePlayerInfo} from "../ui/renderer.js";
-
-/**
- * InventoryItem class
- * Represents an item in the player's inventory
- * @returns {InventoryItem}
- */
-class InventoryItem {
-    /**
-     * InventoryItem constructor
-     * @param {string} id
-     * @param {string} name
-     * @param {string} type
-     * @param {string} description
-     * @param {number|null} damage
-     * @param {number|null} manaCost
-     */
-    constructor(id = '', name = '', type = '', description = '', damage = null, manaCost = null) {
-        this.id = id;
-        this.name = name;
-        this.type = type;
-        this.description = description;
-        this.damage = damage;
-        this.manaCost = manaCost;
-    }
-}
-
-export const emptySlot = new InventoryItem(
-    'empty',
-    'Empty Slot',
-    'empty',
-    'An empty inventory slot.'
-);
-
-export const sword = new InventoryItem(
-    'sword001',
-    'Iron Sword',
-    'weapon',
-    'A sturdy iron sword.',
-    10,
-);
-
-export const fireball = new InventoryItem(
-    'spell001',
-    'Fireball',
-    'spell',
-    'A fiery projectile that burns enemies.',
-    25,
-    5
-);
-
-export const goldenKey = new InventoryItem(
-    'key001',
-    'Golden Key',
-    'key',
-    'Opens the treasure chest in the dungeon.'
-);
-
-export const rubyGem = new InventoryItem(
-    'treasure001',
-    'Ruby Gem',
-    'treasure',
-    'A precious red gemstone.'
-);
-
-/**
- * Item database
- * @type {{weapons: InventoryItem[], spells: InventoryItem[], keys: InventoryItem[], treasures: InventoryItem[]}}
- */
-export const itemDB = {
-    weapons: [
-        sword
-    ],
-    spells: [
-        fireball
-    ],
-    keys: [
-        goldenKey
-    ],
-    treasures: [
-        rubyGem
-    ]
-};
+import {showInfoModal} from "../ui/customModals.js";
+import {itemDB, emptySlot} from "./items.js";
 
 /**
  * Item types
@@ -117,7 +37,7 @@ export const itemTypes = {
 /**
  * @param {string} type
  * @param {Object} player
- * @param {Object|null} forceItem
+ * @param {InventoryItem|null} forceItem
  * @returns {{wasItemAdded: boolean, randomItem: {Object}}}
  */
 export function addItemToInventory(type, player, forceItem = null) {
@@ -134,7 +54,7 @@ export function addItemToInventory(type, player, forceItem = null) {
                 player.inventory.weapons[weaponIndex] = randomItem;
                 wasItemAdded = true;
             } else {
-                alert('No empty weapon slots available!');
+                showInfoModal('Inventory Full', 'No empty weapon slots available!');
             }
             break;
 
@@ -145,7 +65,7 @@ export function addItemToInventory(type, player, forceItem = null) {
                 player.inventory.spells[spellIndex] = randomItem;
                 wasItemAdded = true;
             } else {
-                alert('No empty spell slots available!');
+                showInfoModal('Inventory Full', 'No empty spell slots available!');
             }
             break;
 
@@ -154,7 +74,7 @@ export function addItemToInventory(type, player, forceItem = null) {
                 player.inventory.key = randomItem;
                 wasItemAdded = true;
             } else {
-                alert('Key slot is already occupied!');
+                showInfoModal('Inventory Full', 'Key slot is already occupied!');
             }
             break;
 
@@ -174,6 +94,32 @@ export function resetInventory(player) {
         key: emptySlot,
         treasures: []
     };
+}
+
+export function hasSpaceInInventoryForItem(player, itemType) {
+    switch (itemType) {
+        case 'weapon':
+            return player.inventory.weapons.findIndex(w => w.id === 'empty') !== -1;
+        case 'spell':
+            return player.inventory.spells.findIndex(s => s.id === 'empty') !== -1;
+        case 'key':
+            return player.inventory.key.id === 'empty';
+        case 'treasure':
+            return true;
+    }
+}
+
+export function hasItemInInventory(player, itemType, itemId) {
+    switch (itemType) {
+        case 'weapon':
+            return player.inventory.weapons.some(w => w && w.id === itemId);
+        case 'spell':
+            return player.inventory.spells.some(s => s && s.id === itemId);
+        case 'key':
+            return player.inventory.key && player.inventory.key.id === itemId;
+        case 'treasure':
+            return player.inventory.treasures.some(t => t && t.id === itemId);
+    }
 }
 
 export function removeItemFromInventory(player, itemType, itemId) {
@@ -208,6 +154,5 @@ export function removeItemFromInventory(player, itemType, itemId) {
             }
             break;
     }
-
     updatePlayerInfo(player);
 }

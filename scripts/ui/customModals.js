@@ -218,6 +218,7 @@ export async function awaitPlayerDecisionDropdown(anchorElement, title, message)
         dropdown.innerHTML = `
             <div tabindex="0" class="h-0 w-0 outline-none"></div>
             <div class="dropdown-content bg-base-300 p-4 shadow-lg rounded-box w-64 mt-2">
+                <h4 class="dropdown-header">${title}</h4>
                 <p class="mb-4 text-sm">${message}</p>
                 <div class="flex justify-between gap-2">
                     <button id="dropdownConfirm" class="btn btn-success btn-sm flex-1">

@@ -114,6 +114,7 @@ export function updatePlayerInfo(player) {
 
     elementId('player-health').textContent = `${player.hp}/${player.maxHp}`;
     elementId('player-max-health').textContent = player.maxHp;
+    elementId('player-actions').textContent = player.actions;
 
     infoPanel.append(inventoryDiv);
 

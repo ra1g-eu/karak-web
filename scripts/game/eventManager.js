@@ -4,6 +4,7 @@ import {reducePlayerHealth} from "./gameLogic.js";
 import {updatePlayerInfo} from "../ui/renderer.js";
 import {awaitPlayerDecisionDropdown} from "../ui/customModals.js";
 import {addItemToInventory, hasItemInInventory, hasSpaceInInventoryForItem} from "./inventoryManager.js";
+import {handleEndTurn} from "../ui/uiEvents.js";
 
 export const eventTiles = [
     {
@@ -12,16 +13,18 @@ export const eventTiles = [
         image_open: null,
         name: 'Wild Skeleton',
         hp: 8,
-        onEnter(player) {
+        async onEnter(player) {
             logEvent(`${player.name} encounters a wild skeleton!`);
             const success = Math.random() > 0.5;
 
             if (success) {
                 logEvent(`${player.name} defeated the monster!`);
+                handleEndTurn();
                 return true;
             } else {
                 logEvent(`${player.name} was defeated. The monster remains.`);
                 reducePlayerHealth(player, 1);
+                handleEndTurn();
                 updatePlayerInfo(player);
                 return false;
             }
@@ -36,7 +39,6 @@ export const eventTiles = [
         async onEnter(player) {
             logEvent(`${player.name} found a treasure chest!`);
 
-            const hasKeyInInventory = hasItemInInventory(player, treasureKey.type, treasureKey.id);
             if (Math.random() <= 0.2) {
                 logEvent(`${player.name} couldn't open the chest. It remains.`);
                 return false;
@@ -66,6 +68,7 @@ export const eventTiles = [
             let {wasItemAdded, randomItem} = addItemToInventory(treasureKey.type, player, treasureKey);
             if (wasItemAdded) {
                 updatePlayerInfo(player);
+                handleEndTurn();
                 logEvent(`${player.name} collected the treasure!`);
                 return true;
             }

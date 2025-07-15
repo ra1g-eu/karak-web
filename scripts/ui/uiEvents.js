@@ -6,7 +6,7 @@ import {
     handlePlayerMovement,
     endPlayerTurn,
     rotatePreview,
-    showTilePreview, hideTilePreview
+    showTilePreview, hideTilePreview, handleTilePlacement
 } from './uiManager.js';
 import {highlightTiles, renderBoard, updatePlayerInfo, clearHighlights} from './renderer.js';
 import {getAccessibleTiles, selectClass, TILE_SIZE, tileDeck} from '../game/gameLogic.js';
@@ -115,7 +115,7 @@ function handleDrawEventTile() {
     logEvent(`Drawing event tile: ${event.name}`);
 }
 
-function handleBoardClick(e) {
+async function handleBoardClick(e) {
     const boardEl = elementId('board');
     const rect = boardEl.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
@@ -129,9 +129,12 @@ function handleBoardClick(e) {
         showConfirmModal(
             'Place tile',
             'Are you sure you want to place this tile?',
-            () => {
+            async () => {
                 if (placeTileOnBoard(currentTile, gridX, gridY, currentRotation)) {
                     placingTile = false;
+
+                    await handleTilePlacement(gridX, gridY, currentTile);
+
                     currentTile = null;
                     hideTilePreview('place-tile-div');
                     renderBoard();
@@ -171,15 +174,16 @@ function handleBoardClick(e) {
 
             // Place the event tile
             tileData.event = currentTile;
-            logEvent(`${GameState.getCurrentPlayer().name} placed a ${currentTile.name} event on (${gridX}, ${gridY})`);
+            const player = GameState.getCurrentPlayer();
+            logEvent(`${player.name} placed a ${currentTile.name} event on (${gridX}, ${gridY})`);
 
             // Clean up
             placingEvent = false;
-            currentTile = null;
             currentAccessibleTiles = [];
             hideTilePreview('place-event-tile-div');
             clearHighlights();
             renderBoard();
+            currentTile = null;
         } else {
             alert("Cannot place event on empty tile");
         }
@@ -187,7 +191,7 @@ function handleBoardClick(e) {
     // Additional click handling...
 }
 
-function handleEndTurn() {
+export function handleEndTurn() {
     if (placingTile || placingEvent) {
         showInfoModal('Error', 'Please finish tile placement before ending turn.');
         return;

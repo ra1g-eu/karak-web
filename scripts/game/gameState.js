@@ -17,7 +17,9 @@ export const GameState = {
                 spells: [emptySlot, emptySlot, emptySlot],
                 key: treasureKey,
                 treasures: []
-            }
+            },
+            actions: 4, // Add this
+            maxActions: 4 // Add this
         },
         {
             id: 'c32b-11v',
@@ -34,7 +36,9 @@ export const GameState = {
                 spells: [emptySlot, emptySlot, emptySlot],
                 key: emptySlot,
                 treasures: []
-            }
+            },
+            actions: 4, // Add this
+            maxActions: 4 // Add this
         }
     ],
     currentPlayerIndex: 0,

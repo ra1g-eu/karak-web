@@ -13,7 +13,7 @@ export const tileTypes = {
         name: 'Corridor with a teleport',
         image: 'images/tiles/c_one_way_corridor_teleport.png',
         connections: ['north', 'south'],
-        effects: []
+        effects: ['teleportEffect']
     },
     fourWayCorridor: {
         id: 'fourWayCorridor',
@@ -48,28 +48,28 @@ export const tileTypes = {
         name: '+ shaped corridor with arena',
         image: 'images/tiles/c_four_way_corridor_arena.png',
         connections: ['north', 'east', 'south', 'west'],
-        effects: ['containsEvent']
+        effects: ['arenaEffect']
     },
     fourWayCorridorHpRestore: {
         id: 'fourWayCorridorHpRestore',
         name: '+ shaped corridor with health restore',
         image: 'images/tiles/c_four_way_corridor_hp_restore.png',
         connections: ['north', 'east', 'south', 'west'],
-        effects: ['containsEvent']
+        effects: ['hprestoreEffect']
     },
     fourWayCorridorScorpio: {
         id: 'fourWayCorridorScorpio',
         name: '+ shaped corridor with scorpion',
         image: 'images/tiles/c_four_way_corridor_scorpio.png',
         connections: ['north', 'east', 'south', 'west'],
-        effects: ['containsEvent']
+        effects: ['scorpioEffect']
     },
     lCorridorHpRestore: {
         id: 'lCorridorHpRestore',
         name: 'L shaped corridor with health restore',
         image: 'images/tiles/c_l_corridor_hp_restore.png',
         connections: ['south', 'west'],
-        effects: ['containsEvent']
+        effects: ['hprestoreEffect']
     },
     lCorridor: {
         id: 'lCorridor',
@@ -83,7 +83,7 @@ export const tileTypes = {
         name: 'L shaped corridor with portal',
         image: 'images/tiles/c_l_corridor_portal.png',
         connections: ['south', 'west'],
-        effects: ['containsEvent']
+        effects: ['portalEffect']
     },
     lRoom: {
         id: 'lRoom',
@@ -135,6 +135,10 @@ export class TileDeck {
     drawTile() {
         return this.tiles.length > 0 ? this.tiles.pop() : null;
     }
+}
+
+export function getStartingTile() {
+    return tileTypes.fourWayCorridorHpRestore;
 }
 
 export function getEffectiveConnections(tile, rotation) {

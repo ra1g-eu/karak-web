@@ -1,5 +1,5 @@
 import {GameState} from './gameState.js';
-import {createTileDeck, validateConnections} from './tileManager.js';
+import {createTileDeck, getStartingTile, validateConnections} from './tileManager.js';
 import {characterClasses} from './characterManager.js';
 import {logEvent} from '../utils/helpers.js';
 import {resetInventory} from "./inventoryManager.js";
@@ -16,9 +16,10 @@ export function initGame() {
     GameState.players.forEach(player => {
         player.position = {x: 0, y: 0};
         player.hp = player.maxHp;
+        player.actions = player.maxActions; // Initialize actions
     });
 
-    const initialTile = tileDeck.drawTile();
+    const initialTile = getStartingTile();
     if (initialTile) {
         GameState.map.set('0,0', {tile: initialTile, rotation: 0});
     }

@@ -28,8 +28,10 @@ export const classSelection = elementId('class-selection');
 
 export async function initUI() {
     await setupEventListeners();
-    updatePlayerInfo(GameState.getCurrentPlayer());
+    const currentPlayer = GameState.getCurrentPlayer();
+    updatePlayerInfo(currentPlayer);
     renderBoard();
+    elementId(currentPlayer.id)?.classList.add('player-turn');
 }
 
 async function setupEventListeners() {
@@ -191,12 +193,12 @@ async function handleBoardClick(e) {
     // Additional click handling...
 }
 
-export function handleEndTurn() {
+export async function handleEndTurn() {
     if (placingTile || placingEvent) {
         showInfoModal('Error', 'Please finish tile placement before ending turn.');
         return;
     }
-    const player = endPlayerTurn();
+    const player = await endPlayerTurn();
     if (!player.class) {
         classModal.showModal();
     }

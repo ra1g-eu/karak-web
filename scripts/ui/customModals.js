@@ -1,5 +1,3 @@
-import {rotatePreview} from "./uiManager.js";
-
 /**
  * Shows a confirmation modal with custom title, message, and callbacks.
  * @param {string} title - Modal title
@@ -200,9 +198,11 @@ export async function awaitPlayerDecision(title, message) {
  * @param {HTMLElement} anchorElement - Element to anchor the dropdown to
  * @param {string} title - Modal title
  * @param {string} message - Modal message
+ * @param {string} [confirmButtonText='Confirm'] - Text for the confirm button
+ * @param {string} [cancelButtonText='Cancel'] - Text for the cancel button
  * @returns {Promise<boolean>} Resolves with true if confirmed, false if canceled
  */
-export async function awaitPlayerDecisionDropdown(anchorElement, title, message) {
+export async function awaitPlayerDecisionDropdown(anchorElement, title, message, confirmButtonText = 'Confirm', cancelButtonText = 'Cancel') {
     return new Promise((resolve) => {
         // Create dropdown container
         const dropdown = document.createElement('div');
@@ -222,10 +222,10 @@ export async function awaitPlayerDecisionDropdown(anchorElement, title, message)
                 <p class="mb-4 text-sm">${message}</p>
                 <div class="flex justify-between gap-2">
                     <button id="dropdownConfirm" class="btn btn-success btn-sm flex-1">
-                        Confirm
+                        ${confirmButtonText}
                     </button>
                     <button id="dropdownCancel" class="btn btn-error btn-sm flex-1">
-                        Cancel
+                        ${cancelButtonText}
                     </button>
                 </div>
             </div>

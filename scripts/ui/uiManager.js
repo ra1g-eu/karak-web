@@ -10,6 +10,45 @@ import {elementId, logEvent} from '../utils/helpers.js';
 import {tileDeck} from '../game/gameLogic.js';
 import {validateTileConnection} from "../game/tileManager.js";
 import {awaitPlayerDecisionDropdown, showInfoModal} from "./customModals.js";
+import {handleEndTurn} from "./uiEvents.js";
+
+const delay = ms => new Promise(res => setTimeout(res, ms));
+
+async function showTurnTransition(player) {
+    const overlay = elementId('turn-transition-overlay');
+    const playerImage = elementId('next-player-image');
+    const playerName = elementId('next-player-name');
+
+    playerImage.src = player.image || 'images/monsters/monster_skeleton.png';
+    playerName.textContent = player.name;
+
+    overlay.classList.remove('hidden');
+    await delay(10); // Allow browser to render before animating
+    overlay.classList.add('visible');
+
+    await delay(1500); // Wait for 1.5 seconds
+
+    overlay.classList.remove('visible');
+    await delay(500); // Wait for fade-out
+    overlay.classList.add('hidden');
+}
+
+async function showRoundTransition(round) {
+    const overlay = elementId('round-transition-overlay');
+    const roundText = elementId('round-end-text');
+
+    roundText.textContent = `Round ${round} Begins!`;
+
+    overlay.classList.remove('hidden');
+    await delay(10);
+    overlay.classList.add('visible');
+
+    await delay(1500);
+
+    overlay.classList.remove('visible');
+    await delay(500);
+    overlay.classList.add('hidden');
+}
 
 export function showTilePreview(tile, previewDivId) {
     const preview = elementId(previewDivId);
@@ -77,10 +116,16 @@ export async function handleTilePlacement(x, y, tile) {
         logEvent(`${player.name} found a ${event.name}!`);
         renderBoard();
 
-        const eventRemoved = await event.onEnter(player);
+        const [roundEnd, eventRemoved] = await event.onEnter(player);
 
         if (eventRemoved) {
             delete tileData.event;
+        }
+
+        updatePlayerInfo(player);
+        renderBoard();
+        if (roundEnd) {
+            await handleEndTurn();
         }
     } else if (tile.effects.length > 0) {
         renderBoard();
@@ -97,10 +142,11 @@ export async function handleTilePlacement(x, y, tile) {
         } else {
             logEvent(`${player.name} chose not to use the effect.`);
         }
-    }
 
-    updatePlayerInfo(player);
-    renderBoard();
+        updatePlayerInfo(player);
+        renderBoard();
+        await handleEndTurn();
+    }
 }
 
 export async function handlePlayerMovement(dx, dy) {
@@ -138,16 +184,28 @@ export async function handlePlayerMovement(dx, dy) {
 
     // Handle tile events
     if (newTileData.event) {
-        const eventRemoved = await newTileData.event.onEnter(player);
+        const [roundEnd, eventRemoved] = await newTileData.event.onEnter(player);
         if (eventRemoved) delete newTileData.event;
+        if (roundEnd) {
+            await handleEndTurn();
+            renderBoard();
+        }
     }
 
     return true;
 }
 
-export function endPlayerTurn() {
+export async function endPlayerTurn() {
     const prevPlayer = GameState.getCurrentPlayer();
+    elementId(prevPlayer.id)?.classList.remove('player-turn');
+    const isNewRound = GameState.currentPlayerIndex === GameState.players.length - 1;
     const currentPlayer = GameState.nextTurn();
+
+    if (isNewRound) {
+        await showRoundTransition(GameState.round);
+    }
+
+    await showTurnTransition(currentPlayer);
 
     // Reset movement starting point
     currentPlayer.startPosition = {...currentPlayer.position};
@@ -155,6 +213,8 @@ export function endPlayerTurn() {
 
     logEvent(`Round ${GameState.round} - ${currentPlayer.name}'s turn`);
     updatePlayerInfo(currentPlayer);
+
+    elementId(currentPlayer.id)?.classList.add('player-turn');
 
     return currentPlayer;
 }

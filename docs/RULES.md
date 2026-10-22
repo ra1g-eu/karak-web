@@ -71,7 +71,8 @@ The rulebook says 80 tiles but doesn't break them down. Tiles combine a **shape*
   healing fountain (HF).
 
 ⚠ The exact count of each shape and kind still needs counting from a physical copy. Until then the
-engine uses a placeholder distribution defined in one data file.
+engine uses a placeholder distribution in `src/engine/data/tiles.ts`: 55 rooms, 16 tunnels, 4
+gates and 4 fountains. That's more rooms than bag tokens, so every token can come out.
 
 - `R-TILE-START` The **starting tile** is a 4-way tile with a **healing fountain**. The rulebook
   implies this: a hero who loses next to the start returns there and heals.
@@ -285,6 +286,8 @@ Where the rulebook is silent, the engine follows these until changed. Status val
 | `C-11` | Moves on loss or tie | The move into the monster's tile is still spent. | implied (UBG): Swordsman can fight again "provided this wasn't his fourth action" |
 | `C-12` | Warrior reroll | Rerolling is optional and offered after **every** first roll, including winning ones ("if the first roll is not to his liking"). Bolts can still be added after the final roll. | supported (UBG), replaces the old "only when not winning" ruling |
 | `C-13` | Healing is optional | Ending a turn on an HF lets the player **choose** whether to heal. This includes retreating onto an HF after a fight: the turn ends because of the fight, and the hero may still heal. | supported (UBG) |
+| `C-14` | Tile actions after combat | After a fight the only tile action allowed before the turn ends is healing (`C-13`). Opening a chest or picking up an item needs a turn that didn't end in combat. | proposed |
+| `C-15` | Placing a drawn tile | A drawn tile must be placed; it can't be put back, and nothing else can happen until it is. No move is spent until it's placed. | proposed |
 
 ### 13.1 Open questions
 
@@ -295,6 +298,7 @@ Where the rulebook is silent, the engine follows these until changed. Status val
 | `Q-03` | Count the 80 tiles by shape and kind (tunnel, room, TG, HF). |
 | `Q-04` | Is the dragon in the bag from the start, or added later? The rulebook implies from the start. |
 | `Q-05` | Edition: UBG lists **7 heroes and 30 HP tokens**, adding the Warrior Princess (*Dual Attack*, *Aggressive Movement*), so its edition supports 6 players. This spec keeps the 6 original heroes and 2–5 players. The Warrior Princess goes with the Phase 9 custom content unless we decide otherwise. |
+| `Q-06` | What if the dungeon closes off (no open edge left to explore) while the dragon is still in the bag? The game could never end. It hasn't happened in simulations with the placeholder tiles, but the real tile mix may differ. |
 
 ---
 

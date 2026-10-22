@@ -1,7 +1,8 @@
 # Project Overview — Current State
 
-_Updated 2026-10-22 after Phase 1 (tooling) of [ROADMAP.md](ROADMAP.md). The new app is an
-empty shell; sections 4–7 describe the old prototype, now in `legacy/`._
+_Updated 2026-10-22 after Phase 2 (engine core) of [ROADMAP.md](ROADMAP.md). The engine plays
+complete games headlessly; the browser app is still an empty shell. Sections 4–7 describe the old
+prototype, now in `legacy/`._
 
 ## 1. What this is
 
@@ -34,6 +35,19 @@ Gameplay comes first and visual design later.
 - CI: [.github/workflows/ci.yml](../.github/workflows/ci.yml) runs lint, format check,
   typecheck, tests and build on pushes to `develop`/`main` and on pull requests.
 
+**Engine at a glance**
+
+- `createGame({ seed, players })` returns the starting state. `applyCommand(state, command)`
+  returns `{ ok, state, events }` or `{ ok: false, code, error }`, and never changes its input.
+- The active player's situation is `state.turn.phase`: `awaitingAction`, `placingTile`, `combat`,
+  `choosingLootDrop`, `turnEnding` (after a fight) or `gameOver`.
+- `legalCommands(state)` lists every command the active player may send. It filters candidates
+  through `applyCommand`, so it can't disagree with the rules.
+- Tile actions (heal, open chest, pick up) are options of the `endTurn` command, because each of
+  them ends the turn (`R-END-2`).
+- Done: everything in RULES.md except Portal of Healing, the curse and hero skills (Phase 3).
+  Monster strengths and the tile mix are placeholders (`Q-02`, `Q-03`).
+
 **Old prototype** (`legacy/`): plain ES modules with the Tailwind Play CDN runtime. Open
 `legacy/index.html` through any static server, for example `http://localhost:5173/legacy/` while
 `npm run dev` runs, or through XAMPP. Its image paths point at `../public/images/`.
@@ -43,10 +57,24 @@ Gameplay comes first and visual design later.
 ```
 index.html                 New app entry (loads src/client/main.ts)
 src/
-  engine/index.ts          Engine package boundary (ENGINE_VERSION only, Phase 2 fills it)
+  engine/                  Pure rules engine (no DOM, no Math.random)
+    index.ts               Public API: createGame, applyCommand, legalCommands, data, types
+    types.ts               GameState, Player, PlacedTile, Phase, …
+    commands.ts            Command union (move, placeTile, teleport, rollDice, useBolt, …)
+    events.ts              GameEvent union returned with every accepted command
+    setup.ts               createGame(config): board, shuffled pile and bag, starting roll
+    reducer.ts             applyCommand(state, command) → new state + events, or an error
+    queries.ts             legalCommands, combatTotal, computeScores
+    board.ts               Coordinates, rotations, openings, connectivity
+    rng.ts                 Seeded mulberry32; its state lives in GameState.rng
+    context.ts             RuleError, per-command working context, phase guard
+    data/                  tiles (placeholder mix), monsters, items, heroes
+    rules/                 movement (+ exploring, teleport), combat, inventory,
+                           tileActions (heal, chest, pick up), turn, scoring
   client/main.ts           Renders the placeholder shell
   client/styles.css        Tailwind + daisyUI entry
-tests/engine/              Vitest tests (smoke test for now)
+tests/engine/              Vitest: one file per rule area, plus helpers.ts and a bot
+                           (simulation.ts) that plays full games while checking invariants
 public/images/             Art served at /images/… (background, classes, items, monsters, tiles)
 assets/archive/            Old art versions (former images/*/backup), not served or built
 vite.config.ts             Vite + Vitest config

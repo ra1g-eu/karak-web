@@ -84,27 +84,29 @@ that.
 
 **Exit:** `npm run dev` serves an empty shell, `npm test` runs, and CI is green.
 
-## Phase 2 — Engine core (no UI)
+## Phase 2 — Engine core (no UI) ✅
 
 Built test-first, with each rule ID covered by at least one test.
 
-- [ ] Types, seeded RNG, `createGame` (`R-SETUP-*`)
-- [ ] Tile data: shapes, rotations, openings, kinds; tile pile; starting tile (`R-TILE-START`)
-- [ ] Movement over discovered tiles, with the 4-move budget (`R-TURN-*`, `R-MOVE-*`)
-- [ ] Exploration: draw, valid rotations, placement, room → bag draw (`R-EXPLORE-*`, `R-ROOM-*`)
-- [ ] Bag of 53 tokens (`§2.1`)
-- [ ] Combat: 2d6 + weapons + bolts; win, tie, loss; retreat; loot (`R-COMBAT-*`, `R-RETREAT`)
-- [ ] Inventory slots, overflow drop, picking up from tiles (`R-INV-*`)
-- [ ] HP, unconsciousness and skipped turn, HF healing (`R-HP-*`, `R-HEAL-*`)
-- [ ] Keys and chests (`R-KEY-*`), teleport gates (`R-TG-*`)
-- [ ] Turn end conditions (`R-END-*`), dragon victory and VP scoring (`R-WIN-*`)
-- [ ] A **headless simulation test** that plays full random games to the end without errors
+- [x] Types, seeded RNG, `createGame` (`R-SETUP-*`)
+- [x] Tile data: shapes, rotations, openings, kinds; tile pile; starting tile (`R-TILE-START`).
+      Tile mix is placeholder data (`Q-03`)
+- [x] Movement over discovered tiles, with the 4-move budget (`R-TURN-*`, `R-MOVE-*`)
+- [x] Exploration: draw, valid rotations, placement, room → bag draw (`R-EXPLORE-*`, `R-ROOM-*`)
+- [x] Bag of 53 tokens (`§2.1`). Strengths are placeholder data (`Q-02`)
+- [x] Combat: 2d6 + weapons + bolts; win, tie, loss; retreat; loot (`R-COMBAT-*`, `R-RETREAT`)
+- [x] Inventory slots, overflow drop, picking up from tiles (`R-INV-*`)
+- [x] HP, unconsciousness and skipped turn, HF healing (`R-HP-*`, `R-HEAL-*`)
+- [x] Keys and chests (`R-KEY-*`), teleport gates (`R-TG-*`)
+- [x] Turn end conditions (`R-END-*`), dragon victory and VP scoring (`R-WIN-*`)
+- [x] A **headless simulation test** that plays full random games to the end without errors
+- [x] `legalCommands(state)`: every command the active player may send, for the UI and bots
 
 **Exit:** a complete game can be played from the test console by sending commands.
 
 ## Phase 3 — Heroes, spells, curse
 
-- [ ] Magic Bolt, Portal of Healing (`R-BOLT-1`, `R-PORTAL-*`)
+- [ ] ~~Magic Bolt~~ (done in Phase 2 with combat), Portal of Healing (`R-BOLT-1`, `R-PORTAL-*`)
 - [ ] Curse placement, effects and lifting (`R-CURSE-*`)
 - [ ] All six heroes and their skills (§12), each with dedicated tests, including the cursed case
 
@@ -177,3 +179,4 @@ Functional UI only. It should look tidy, but it doesn't need to look good yet.
 |---|---|
 | 2026-10-22 | Roadmap created. Phase 0 started. |
 | 2026-10-22 | Phase 0 done (open questions deferred). Phase 1 done: Vite 8, TypeScript 6, Vitest 5, ESLint 10, Tailwind 4 + daisyUI 5. Next: Phase 2. |
+| 2026-10-22 | Phase 2 done: engine core with 95 tests, including bot games played to the end. Added `C-14`, `C-15`, `Q-06`. Next: Phase 3. |

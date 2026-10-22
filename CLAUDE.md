@@ -15,8 +15,13 @@ later.
 
 ## Current state
 
-- Phases 0 and 1 are done; **Phase 2 (engine core) is next**. Open questions `Q-01`–`Q-05` are
-  deferred, so use placeholder data where they matter.
+- Phases 0–2 are done; **Phase 3 (Portal of Healing, curse, hero skills) is next**. Open
+  questions `Q-01`–`Q-06` are deferred, so use placeholder data where they matter.
+- Engine API and module map: OVERVIEW §2–3. New rules go in `src/engine/rules/`, with tests in
+  `tests/engine/<area>.test.ts` built from the scenario helpers in `tests/engine/helpers.ts`
+  (`newGame`, `putTiles`, `stackPile`, `stackBag`, `rigDice`, `run`, `expectRejected`).
+- `tests/engine/simulation.ts` is a bot that plays full games and checks invariants after every
+  command. Extend `checkInvariants` and the bot when adding rules.
 - Stack: **Vite + TypeScript (strict) + Vitest**, Tailwind 4 + daisyUI 5. The engine goes in
   `src/engine` (pure), the UI in `src/client`, tests in `tests/`, and later a Node WebSocket
   server in `src/server`. Art is in `public/images/` (served at `/images/…`).

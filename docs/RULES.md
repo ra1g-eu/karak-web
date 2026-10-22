@@ -11,6 +11,9 @@ Lore and flavour text are left out.
 - Rules marked **(rulebook)** come straight from the official rules.
 - Rules marked **(clarification)** fill gaps the rulebook doesn't cover. They live in
   [§13 Clarifications](#13-clarifications--house-rules) and can be changed by agreement.
+- **UBG** marks a point settled by a secondary source:
+  [UltraBoardGames' rules page](https://www.ultraboardgames.com/karak/game-rules.php). It
+  restates the rules from a later edition. The rulebook wins wherever the two disagree.
 - Values marked **⚠ unverified** don't appear in the rulebook (they're printed on the physical
   tokens). They need checking against a physical copy.
 
@@ -81,8 +84,8 @@ engine uses a placeholder distribution defined in one data file.
 - `R-SETUP-4` Every player picks a hero, either by choice or at random as the players agree. Each
   hero can be taken by only one player.
 - `R-SETUP-5` All heroes start on the starting tile.
-- `R-SETUP-6` Roll dice to pick the starting player. Play then goes **clockwise**, which here means
-  in seat order.
+- `R-SETUP-6` Every player rolls the dice, and the highest roll starts (UBG). Play then goes
+  **clockwise**, which here means in seat order.
 - `R-SETUP-7` Monsters and chests go into the bag, unseen and shuffled.
 
 ## 4. Turn structure
@@ -153,12 +156,15 @@ engine uses a placeholder distribution defined in one data file.
   5. Compare the **total** with the monster's **strength**.
 - `R-COMBAT-LOSS` **Total < strength: loss.**
   - The hero takes 1 wound (flips one HP token to the skull side).
-  - The hero moves **back to the tile they came from**.
+  - The hero **retreats** (`R-RETREAT`).
   - The monster stays on its tile, face up.
 - `R-COMBAT-TIE` **Total = strength: tie.**
   - Nobody is hurt.
-  - The hero moves back to the tile they came from.
+  - The hero retreats (`R-RETREAT`).
   - The monster stays (Thief: see *Backstab*).
+- `R-RETREAT` A retreating hero walks back along the path they took this turn to the **first tile
+  without a monster**. Usually that's the tile they just came from. The rulebook says "the tile
+  they came from"; UBG adds the monster-free condition. A retreat costs no moves.
 - `R-COMBAT-WIN` **Total > strength: victory.**
   - The monster token is flipped and its **loot** is taken (§9).
   - If the hero has no room for the loot, the player picks one item, the new one or one they
@@ -249,42 +255,46 @@ Each hero has two skills. **Cursed heroes lose both** (`R-CURSE-2`).
 
 | ID | Hero | Skill 1 | Skill 2 |
 |---|---|---|---|
-| `warrior` | **Horan, the Warrior** | **Double Attack:** may reroll both dice once per combat. A loss on the first roll costs no HP. The second roll stands. | **Reincarnation:** at 0 HP he doesn't fall unconscious. He teleports to any HF and heals to full, but the turn still ends. |
+| `warrior` | **Horan, the Warrior** | **Double Attack:** may reroll both dice once per combat if he doesn't like the first roll. A loss on the first roll costs no HP. The second roll stands. | **Reincarnation:** at 0 HP he doesn't fall unconscious. He teleports to any HF and heals to full, but the turn still ends. |
 | `thief` | **Aderyn, the Thief** | **Backstab:** wins every combat that would be a tie. | **Stealth:** on entering a tile with a monster she may skip the fight and keep moving. |
 | `wizard` | **Argentus, the Wizard** | **Magical Affinity:** his Magic Bolts aren't used up (Portal of Healing still is). Cursed, he uses them up like everyone else. | **Astral Walking:** moves through walls, but only between **already discovered** tiles. Exploring still follows `R-EXPLORE-2`. |
 | `warlock` | **Lord Xanros, the Warlock** | **Sacrifice:** after the roll he may spend 1 HP for +1, at most once per combat. Spending his last HP is allowed, but he falls unconscious next turn. | **Magic Swap:** swaps tiles with any other hero for **all 4 moves**, so only at the start of his turn. He may still use his new tile's feature (unlock a chest, heal, and so on). |
-| `swordsman` | **Victorius, the Swordsman** | **Combat Training:** any die showing **1** may be rerolled until it isn't 1. | **Unstoppable:** if any die shows **6** in combat, he may **keep his turn going** with his remaining moves. He may even fight the same monster again after a tie or loss. |
+| `swordsman` | **Victorius, the Swordsman** | **Combat Training:** any die showing **1** may be rerolled until it isn't 1. | **Unstoppable:** if any die shows **6** in combat, he may **keep his turn going** with his remaining moves. He may even fight the same monster again after a tie or loss, if he has a move left (UBG). |
 | `oracle` | **Taia, the Oracle** | **Farseeing:** +1 to the combat total if the fight happens on her **first move** of the turn. | **Fateweaver:** when drawing from the bag she draws **two** tokens, places one, and puts the other back. |
 
 ## 13. Clarifications & house rules
 
-Where the rulebook is silent, the engine follows these until changed. Status is **proposed** until
-we confirm it together.
+Where the rulebook is silent, the engine follows these until changed. Status values:
+
+- **supported (UBG):** the secondary source states it outright.
+- **implied (UBG):** the secondary source's wording or examples point this way.
+- **proposed:** our own ruling, until we confirm it together.
 
 | ID | Topic | Ruling | Status |
 |---|---|---|---|
-| `C-01` | Exploring direction | A hero can explore only through an **opening** on their own tile. | proposed |
+| `C-01` | Exploring direction | A hero can explore only through an **opening** on their own tile. | implied (UBG): the new tile "must have a route that connects to the previous tile" |
 | `C-02` | Rotation choice | The UI offers only rotations that satisfy `R-EXPLORE-2`. If no rotation fits (impossible for standard shapes), the tile is discarded and another drawn. | proposed |
-| `C-03` | Treasure capacity | Treasures don't use slots, so a hero can carry any number. | proposed |
-| `C-04` | Unconscious hero's gear | The hero **keeps all equipment** and stays on the tile they were pushed back to. The rulebook never mentions losing gear. **The current prototype wipes the inventory, which is wrong.** | proposed |
-| `C-05` | "Tile they came from" | The tile the hero occupied before the move that started combat. After a teleport, that's the departure TG. | proposed |
+| `C-03` | Treasure capacity | Treasures don't use slots, so a hero can carry any number. | supported (UBG) |
+| `C-04` | Unconscious hero's gear | The hero **keeps all equipment** and stays on the tile they retreated to. Neither source mentions losing gear. **The current prototype wipes the inventory, which is wrong.** | proposed |
+| `C-05` | Retreat path | The engine records each hero's path this turn, including teleports. `R-RETREAT` walks that path backwards. The tile where the turn started never holds a monster, so a retreat always ends somewhere. | supported (UBG), path tracking is ours |
 | `C-06` | Empty bag / empty tile pile | Empty bag: newly found rooms stay empty. Empty tile pile: no more exploring. | proposed |
-| `C-07` | Heroes sharing tiles | Allowed, with no interaction. There is no PvP. | proposed |
-| `C-08` | Chest left on a tile | A chest that can't be opened stays on its tile. Any hero with a key who **ends their turn there** may open it. | proposed |
-| `C-09` | Dropped items | Several items may lie on one tile. Picking one up ends the turn. | proposed |
-| `C-10` | Monster revisits | A monster that survived stays face up. Any hero entering its tile must fight it (Thief may skip). | proposed |
-| `C-11` | Combat rewind | On loss or tie the hero's move is still spent. | proposed |
-| `C-12` | Warrior reroll | Rerolling is optional and offered only when the first roll would not win. | proposed |
-| `C-13` | Healing is optional | Ending a turn on an HF lets the player **choose** whether to heal. | proposed |
+| `C-07` | Heroes sharing tiles | Heroes may move onto **and through** tiles with other heroes. There's no interaction and no PvP. | supported (UBG) |
+| `C-08` | Chest left on a tile | A chest that can't be opened stays on its tile. Any hero with a key who **ends their turn there** may open it. | supported (UBG) |
+| `C-09` | Dropped items | Picking up a key, weapon or spell from a tile ends the turn. Several items may lie on one tile (our ruling). | supported (UBG), except several items per tile |
+| `C-10` | Monster revisits | A monster that survived stays face up. Any hero entering its tile must fight it (Thief may skip). | supported (UBG) |
+| `C-11` | Moves on loss or tie | The move into the monster's tile is still spent. | implied (UBG): Swordsman can fight again "provided this wasn't his fourth action" |
+| `C-12` | Warrior reroll | Rerolling is optional and offered after **every** first roll, including winning ones ("if the first roll is not to his liking"). Bolts can still be added after the final roll. | supported (UBG), replaces the old "only when not winning" ruling |
+| `C-13` | Healing is optional | Ending a turn on an HF lets the player **choose** whether to heal. This includes retreating onto an HF after a fight: the turn ends because of the fight, and the hero may still heal. | supported (UBG) |
 
 ### 13.1 Open questions
 
 | ID | Question |
 |---|---|
-| `Q-01` | How should VP ties be broken? Options: the dragon slayer wins, or a shared victory. |
-| `Q-02` | Confirm the monster strengths marked ⚠ against the physical tokens. |
+| `Q-01` | How should VP ties be broken? Options: the dragon slayer wins, or a shared victory. Not covered by UBG either. |
+| `Q-02` | Confirm the monster strengths marked ⚠ against the physical tokens. UBG only confirms the Skeleton King (10). |
 | `Q-03` | Count the 80 tiles by shape and kind (tunnel, room, TG, HF). |
 | `Q-04` | Is the dragon in the bag from the start, or added later? The rulebook implies from the start. |
+| `Q-05` | Edition: UBG lists **7 heroes and 30 HP tokens**, adding the Warrior Princess (*Dual Attack*, *Aggressive Movement*), so its edition supports 6 players. This spec keeps the 6 original heroes and 2–5 players. The Warrior Princess goes with the Phase 9 custom content unless we decide otherwise. |
 
 ---
 
@@ -294,7 +304,7 @@ we confirm it together.
 - **Turn ends on:** combat (any result), opening a chest, picking up gear, healing at an HF, or
   the 4th move.
 - **Combat:** 2d6 + all weapons + any Magic Bolts (+1 each, chosen after rolling) + skills, compared
-  with the monster's strength. Higher wins, equal ties, lower loses (1 wound and a step back).
+  with the monster's strength. Higher wins, equal ties, lower loses (1 wound and a retreat to the nearest monster-free tile).
 - **0 HP:** skip one turn and come back with 1 HP. An HF heals fully and removes the curse.
 - **Inventory:** 2 weapons, 3 spells, 1 key, unlimited treasure. Overflow is dropped on the tile.
 - **Curse:** placed by a Mummy's slayer. The cursed hero loses their skills until healed.

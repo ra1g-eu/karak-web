@@ -63,7 +63,8 @@ that.
 - [x] Document the current state in [OVERVIEW.md](OVERVIEW.md)
 - [x] Write this roadmap and `CLAUDE.md`
 - [ ] Commit the current WIP so the prototype has a clean baseline
-- [ ] Answer the open questions `Q-01`–`Q-04` in RULES.md (monster strengths, tile counts)
+- [x] Cross-check the clarifications against a secondary rules source (UltraBoardGames)
+- [ ] Answer the open questions `Q-01`–`Q-05` in RULES.md (monster strengths, tile counts, edition)
 - [ ] Review the clarifications `C-01`–`C-13` and mark each as confirmed
 
 **Exit:** docs agreed, working tree clean.

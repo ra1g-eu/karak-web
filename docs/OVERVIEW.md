@@ -1,6 +1,7 @@
 # Project Overview — Current State
 
-_Snapshot taken 2026-10-22, before the refactor (Phase 0 in [ROADMAP.md](ROADMAP.md))._
+_Updated 2026-10-22 after Phase 1 (tooling) of [ROADMAP.md](ROADMAP.md). The new app is an
+empty shell; sections 4–7 describe the old prototype, now in `legacy/`._
 
 ## 1. What this is
 
@@ -14,25 +15,52 @@ Gameplay comes first and visual design later.
 - Rules reference: [RULES.md](RULES.md)
 - Plan: [ROADMAP.md](ROADMAP.md)
 
-## 2. How it runs today
+## 2. How it runs
 
-- Plain ES modules with **no build step** and no `package.json`. The code is served as static files
-  by XAMPP Apache: open `http://localhost/karak/refactor/`.
-- The UI uses **Tailwind via the Play CDN runtime** (`scripts/tailwind.js`, which isn't meant for
-  production), **daisyUI 5** (`css/daisyui@5.css`), and **Font Awesome**, all vendored locally.
-- Entry point: [index.html](../index.html) loads every module, then calls `initGame()` and
-  `initUI()` on `DOMContentLoaded`.
-- There are no tests, no linting, and no formatter.
+**New app** (Vite + TypeScript, Node ≥ 22):
+
+| Command | What it does |
+|---|---|
+| `npm install` | Install dependencies (first time) |
+| `npm run dev` | Dev server at `http://localhost:5173/` |
+| `npm test` | Vitest, once (`npm run test:watch` to watch) |
+| `npm run lint` | ESLint, including the engine purity rules |
+| `npm run typecheck` | `tsc` twice: whole project, then `src/engine` without DOM types |
+| `npm run format` / `format:check` | Prettier (4 spaces, single quotes, 100 cols; skips `*.md`) |
+| `npm run build` | Typecheck, then build to `dist/` with relative asset paths |
+
+- Styling: Tailwind 4 and daisyUI 5 compiled by Vite (`src/client/styles.css`), Font Awesome 7
+  from npm. The page uses daisyUI's `dark` theme.
+- CI: [.github/workflows/ci.yml](../.github/workflows/ci.yml) runs lint, format check,
+  typecheck, tests and build on pushes to `develop`/`main` and on pull requests.
+
+**Old prototype** (`legacy/`): plain ES modules with the Tailwind Play CDN runtime. Open
+`legacy/index.html` through any static server, for example `http://localhost:5173/legacy/` while
+`npm run dev` runs, or through XAMPP. Its image paths point at `../public/images/`.
 
 ## 3. Repository layout
 
 ```
-index.html                 Whole UI layout: 3 panels, modals, turn and round overlays
-css/
+index.html                 New app entry (loads src/client/main.ts)
+src/
+  engine/index.ts          Engine package boundary (ENGINE_VERSION only, Phase 2 fills it)
+  client/main.ts           Renders the placeholder shell
+  client/styles.css        Tailwind + daisyUI entry
+tests/engine/              Vitest tests (smoke test for now)
+public/images/             Art served at /images/… (background, classes, items, monsters, tiles)
+assets/archive/            Old art versions (former images/*/backup), not served or built
+vite.config.ts             Vite + Vitest config
+tsconfig.json              Strict TS for the whole project
+tsconfig.engine.json       Same, minus DOM types, for src/engine only
+eslint.config.js           ESLint flat config, engine purity rules
+.github/workflows/ci.yml   CI
+legacy/                    Old prototype, read-only until Phase 4 deletes it:
+legacy/index.html          Whole UI layout: 3 panels, modals, turn and round overlays
+legacy/css/
   styles.css               Board, tile, player, event, overlay styles
   themes.css               (empty)
   daisyui@5.css, fontawesome.min.css   Vendored libraries
-scripts/
+legacy/scripts/
   game/                    "Logic". Still imports UI code (see §6)
     gameState.js           Singleton GameState: 2 hard-coded players, map, turn and round
     gameLogic.js           initGame, tile deck instance, placement checks, class select, damage
@@ -47,14 +75,7 @@ scripts/
     renderer.js            Absolute-positioned DOM rendering of tiles, events, players, inventory
     customModals.js        Promise and callback wrappers around <dialog> and dropdowns
   utils/helpers.js         Direction helpers, logEvent (DOM), element shortcuts
-images/
-  tiles/      c_*.png tile art (current set) + backup/
-  monsters/   monster_*.png (custom art, not the original Karak monsters) + backup/
-  items/      item_*.png weapons, spells, keys, chests + backup/
-  classes/    class_*.png hero portraits (15)
-  background/ grass-*.png board backgrounds
-public/, src/              Empty folder scaffolding (a restructure was started)
-webfonts/                  Font Awesome fonts
+legacy/webfonts/           Font Awesome fonts for the prototype
 Karak_rules_EN_print.pdf   Official rulebook (untracked)
 ```
 
@@ -126,7 +147,7 @@ Karak_rules_EN_print.pdf   Official rulebook (untracked)
 
 ## 8. Assets inventory
 
-**Tiles** (`images/tiles/`): `c_one_way_corridor`, `c_one_way_corridor_teleport`,
+**Tiles** (`public/images/tiles/`): `c_one_way_corridor`, `c_one_way_corridor_teleport`,
 `c_one_way_room`, `c_l_corridor`, `c_l_corridor_hp_restore`, `c_l_corridor_portal`, `c_l_room`,
 `c_t_corridor`, `c_t_room`, `c_four_way_corridor`, `c_four_way_corridor_hp_restore` (start),
 `c_four_way_room`, `c_dragon_end_game`, `c_wall`; custom: `c_four_way_corridor_arena`,
@@ -135,7 +156,7 @@ Karak_rules_EN_print.pdf   Official rulebook (untracked)
 > "One way" in the filenames means a **straight** two-opening tile (north–south), not a dead end.
 > There's no dead-end art yet.
 
-**Monsters** (`images/monsters/`): custom art that doesn't match the original bestiary. A
+**Monsters** (`public/images/monsters/`): custom art that doesn't match the original bestiary. A
 provisional mapping for gameplay until real art exists:
 
 | Rule monster | Placeholder art |
@@ -149,18 +170,17 @@ provisional mapping for gameplay until real art exists:
 | The Fallen | `monster_cursed_wolf` |
 | Dragon | tile `c_dragon_end_game` / TBD |
 
-**Items** (`images/items/`): daggers, sword, axe, key, chests (closed and open), magic shot
+**Items** (`public/images/items/`): daggers, sword, axe, key, chests (closed and open), magic shot
 (→ Magic Bolt), healing portal; custom extras: bow, hatchet, knives, magic mace, shield, shovel,
 sledge hammer, golden scarab, rainfall, teleport, fist.
 
-**Hero portraits** (`images/classes/`): 15 portraits. The six base heroes will get one each (for
+**Hero portraits** (`public/images/classes/`): 15 portraits. The six base heroes will get one each (for
 example knight → Warrior, mage → Warlock). The rest are kept for custom heroes later.
 
-The `backup/` folders hold older versions of the art and aren't used by the code.
+Older versions of the art live in `assets/archive/` and aren't used by the code.
 
 ## 9. Repository state
 
-- Branch `develop`, 4 commits (`init` → `player actions`).
-- Uncommitted WIP: turn and round transition overlays, the chest-needs-key change, and the
-  `awaitPlayerDecisionDropdown` button labels.
+- Branch `develop`, pushed to `github.com/ra1g-eu/karak-web`.
+- The prototype WIP (turn overlays, chest-needs-key) was committed before the move to `legacy/`.
 - `Karak_rules_EN_print.pdf` is untracked.

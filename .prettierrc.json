@@ -1,0 +1,13 @@
+{
+    "singleQuote": true,
+    "tabWidth": 4,
+    "printWidth": 100,
+    "endOfLine": "auto",
+    "overrides": [
+        {
+            "files": ["*.json", "*.yml", "*.yaml"],
+            "excludeFiles": ["tsconfig*.json", ".prettierrc.json"],
+            "options": { "tabWidth": 2 }
+        }
+    ]
+}

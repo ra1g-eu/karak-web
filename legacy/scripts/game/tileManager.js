@@ -4,105 +4,105 @@ export const tileTypes = {
     oneWayCorridor: {
         id: 'oneWayCorridor',
         name: 'Corridor',
-        image: 'images/tiles/c_one_way_corridor.png',
+        image: '../public/images/tiles/c_one_way_corridor.png',
         connections: ['north', 'south'],
         effects: []
     },
     oneWayCorridorTeleport: {
         id: 'oneWayCorridorTeleport',
         name: 'Corridor with a teleport',
-        image: 'images/tiles/c_one_way_corridor_teleport.png',
+        image: '../public/images/tiles/c_one_way_corridor_teleport.png',
         connections: ['north', 'south'],
         effects: ['teleportEffect']
     },
     fourWayCorridor: {
         id: 'fourWayCorridor',
         name: '+ shaped corridor',
-        image: 'images/tiles/c_four_way_corridor.png',
+        image: '../public/images/tiles/c_four_way_corridor.png',
         connections: ['north', 'south', 'east', 'west'],
         effects: []
     },
     oneWayRoom: {
         id: 'oneWayRoom',
         name: 'Room',
-        image: 'images/tiles/c_one_way_room.png',
+        image: '../public/images/tiles/c_one_way_room.png',
         connections: ['north', 'south'],
         effects: ['containsEvent']
     },
     fourWayRoom: {
         id: 'fourWayRoom',
         name: '+ shaped room',
-        image: 'images/tiles/c_four_way_room.png',
+        image: '../public/images/tiles/c_four_way_room.png',
         connections: ['north', 'east', 'south', 'west'],
         effects: ['containsEvent']
     },
     dragonEndGame: {
         id: 'dragonEndGame',
         name: 'Dragon battle',
-        image: 'images/tiles/c_dragon_end_game.png',
+        image: '../public/images/tiles/c_dragon_end_game.png',
         connections: ['north', 'east', 'south', 'west'],
         effects: ['containsEvent']
     },
     fourWayCorridorArena: {
         id: 'fourWayCorridorArena',
         name: '+ shaped corridor with arena',
-        image: 'images/tiles/c_four_way_corridor_arena.png',
+        image: '../public/images/tiles/c_four_way_corridor_arena.png',
         connections: ['north', 'east', 'south', 'west'],
         effects: ['arenaEffect']
     },
     fourWayCorridorHpRestore: {
         id: 'fourWayCorridorHpRestore',
         name: '+ shaped corridor with health restore',
-        image: 'images/tiles/c_four_way_corridor_hp_restore.png',
+        image: '../public/images/tiles/c_four_way_corridor_hp_restore.png',
         connections: ['north', 'east', 'south', 'west'],
         effects: ['hprestoreEffect']
     },
     fourWayCorridorScorpio: {
         id: 'fourWayCorridorScorpio',
         name: '+ shaped corridor with scorpion',
-        image: 'images/tiles/c_four_way_corridor_scorpio.png',
+        image: '../public/images/tiles/c_four_way_corridor_scorpio.png',
         connections: ['north', 'east', 'south', 'west'],
         effects: ['scorpioEffect']
     },
     lCorridorHpRestore: {
         id: 'lCorridorHpRestore',
         name: 'L shaped corridor with health restore',
-        image: 'images/tiles/c_l_corridor_hp_restore.png',
+        image: '../public/images/tiles/c_l_corridor_hp_restore.png',
         connections: ['south', 'west'],
         effects: ['hprestoreEffect']
     },
     lCorridor: {
         id: 'lCorridor',
         name: 'L shaped corridor',
-        image: 'images/tiles/c_l_corridor_hp_restore.png',
+        image: '../public/images/tiles/c_l_corridor_hp_restore.png',
         connections: ['south', 'west'],
         effects: []
     },
     lCorridorPortal: {
         id: 'lCorridorPortal',
         name: 'L shaped corridor with portal',
-        image: 'images/tiles/c_l_corridor_portal.png',
+        image: '../public/images/tiles/c_l_corridor_portal.png',
         connections: ['south', 'west'],
         effects: ['portalEffect']
     },
     lRoom: {
         id: 'lRoom',
         name: 'L shaped room',
-        image: 'images/tiles/c_l_room.png',
+        image: '../public/images/tiles/c_l_room.png',
         connections: ['south', 'west'],
         effects: ['containsEvent']
     },
     tCorridor: {
         id: 'tCorridor',
         name: 'T shaped corridor',
-        image: 'images/tiles/c_t_corridor.png',
+        image: '../public/images/tiles/c_t_corridor.png',
         connections: ['south', 'west', 'north'],
         effects: []
     },
     tRoom: {
         id: 'tRoom',
         name: 'T shaped room',
-        image: 'images/tiles/c_t_room.png',
+        image: '../public/images/tiles/c_t_room.png',
         connections: ['south', 'west', 'north'],
         effects: ['containsEvent']
     }

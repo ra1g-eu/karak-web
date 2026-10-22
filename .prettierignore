@@ -1,0 +1,9 @@
+dist
+legacy
+assets
+public
+node_modules
+package-lock.json
+# Docs are hand-formatted (wide tables); keep Prettier off them.
+*.md
+*.pdf

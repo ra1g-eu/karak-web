@@ -37,7 +37,7 @@ export const sword = new InventoryItem(
     'Iron Sword',
     'weapon',
     'A sturdy iron sword.',
-    'images/items/item_sword.png',
+    '../public/images/items/item_sword.png',
     10,
 );
 
@@ -46,7 +46,7 @@ export const rainfall = new InventoryItem(
     'Rainfall spell',
     'spell',
     'Ice-cold projectiles that freeze enemies.',
-    'images/items/item_spell_rainfall.png',
+    '../public/images/items/item_spell_rainfall.png',
     25,
     5
 );
@@ -56,7 +56,7 @@ export const treasureKey = new InventoryItem(
     'Treasure Key',
     'key',
     'Opens the treasure chest in the dungeon.',
-    'images/items/item_treasure_key.png',
+    '../public/images/items/item_treasure_key.png',
 );
 
 export const treasureChest = new InventoryItem(
@@ -64,7 +64,7 @@ export const treasureChest = new InventoryItem(
     'Treasure Chest',
     'treasure',
     'A chest filled with treasure.',
-    'images/items/item_treasure_chest_closed.png',
+    '../public/images/items/item_treasure_chest_closed.png',
 );
 
 /**

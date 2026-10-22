@@ -15,13 +15,21 @@ later.
 
 ## Current state
 
-- Phase 0 of the roadmap. The code in `scripts/`, `css/` and `index.html` is a **prototype that will
-  be replaced**. Logic and UI are tangled and many rules are missing or wrong (see OVERVIEW §5–7).
-  Don't build new features on it; fix it only if asked.
-- It runs as static files through XAMPP at `http://localhost/karak/refactor/`. There is no build,
-  no package manager and no tests yet.
-- Decided target stack: **Vite + TypeScript (strict) + Vitest**. The engine goes in `src/engine`
-  (pure), the UI in `src/client`, and later a Node WebSocket server in `src/server`.
+- Phases 0 and 1 are done; **Phase 2 (engine core) is next**. Open questions `Q-01`–`Q-05` are
+  deferred, so use placeholder data where they matter.
+- Stack: **Vite + TypeScript (strict) + Vitest**, Tailwind 4 + daisyUI 5. The engine goes in
+  `src/engine` (pure), the UI in `src/client`, tests in `tests/`, and later a Node WebSocket
+  server in `src/server`. Art is in `public/images/` (served at `/images/…`).
+- `legacy/` holds the old prototype: tangled logic and UI, many rules missing or wrong (OVERVIEW
+  §5–7). It's reference only. Don't build on it or port its code; reimplement from RULES.md.
+
+## Commands
+
+- `npm run dev`: dev server at `http://localhost:5173/` (the prototype is at `/legacy/`)
+- `npm test`, `npm run lint`, `npm run typecheck`, `npm run format:check`, `npm run build`
+- Before calling work done, run lint, typecheck and tests. CI runs all of them plus the build.
+- `npm run typecheck` also checks `src/engine` without DOM types (`tsconfig.engine.json`), and
+  ESLint bans DOM, timers, `Date` and `Math.random()` there.
 
 ## Rules of engagement
 
@@ -42,5 +50,7 @@ later.
 
 ## Environment
 
-- Windows 11, XAMPP in `C:\xampp`, Node available. Shells: PowerShell (default) and Git Bash.
+- Windows 11, Node 24, repo inside XAMPP's `htdocs`. Shells: PowerShell (default) and Git Bash.
+- Port 80 on this machine answers from an Ubuntu Apache (likely WSL), so use the Vite dev server
+  for previews.
 - Git: work on `develop`, and only commit or push when asked.

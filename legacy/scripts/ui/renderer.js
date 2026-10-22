@@ -97,7 +97,7 @@ export function updatePlayerInfo(player) {
     statsPanel.innerHTML = `<div class="flex items-center mb-4">
                             <div class="avatar">
                                 <div class="w-16 rounded-full">
-                                    <img src="${player.image ? player.image : 'images/monsters/monster_skeleton.png'}" alt="${player.class}">
+                                    <img src="${player.image ? player.image : '../public/images/monsters/monster_skeleton.png'}" alt="${player.class}">
                                 </div>
                             </div>
                             <div class="ml-4">

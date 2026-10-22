@@ -1,0 +1,10 @@
+{
+    // The engine must run in the browser, in tests and on a Node server unchanged,
+    // so it is type-checked without DOM or Node types: any use of them fails here.
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "lib": ["ES2022"],
+        "types": []
+    },
+    "include": ["src/engine"]
+}

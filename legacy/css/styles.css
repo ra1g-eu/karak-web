@@ -18,7 +18,7 @@ body {
     overflow: hidden;
     position: relative;
     height: 590px;
-    background-image: url('../images/background/grass-2.png');
+    background-image: url('../../public/images/background/grass-2.png');
     background-repeat: repeat;
 }
 

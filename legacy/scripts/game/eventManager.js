@@ -14,7 +14,7 @@ import {handleEndTurn} from "../ui/uiEvents.js";
 export const eventTiles = [
     {
         id: 'monsterBattle',
-        image: 'images/monsters/monster_skeleton.png',
+        image: '../public/images/monsters/monster_skeleton.png',
         image_open: null,
         name: 'Wild Skeleton',
         hp: 8,
@@ -35,8 +35,8 @@ export const eventTiles = [
     },
     {
         id: 'treasureChest',
-        image: 'images/items/item_treasure_chest_closed.png',
-        image_open: 'images/items/item_treasure_chest_open.png',
+        image: '../public/images/items/item_treasure_chest_closed.png',
+        image_open: '../public/images/items/item_treasure_chest_open.png',
         name: 'Treasure Chest',
         drops: treasureChest,
         async onEnter(player) {

@@ -19,7 +19,7 @@ async function showTurnTransition(player) {
     const playerImage = elementId('next-player-image');
     const playerName = elementId('next-player-name');
 
-    playerImage.src = player.image || 'images/monsters/monster_skeleton.png';
+    playerImage.src = player.image || '../public/images/monsters/monster_skeleton.png';
     playerName.textContent = player.name;
 
     overlay.classList.remove('hidden');

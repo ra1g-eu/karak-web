@@ -43,8 +43,9 @@ src/
     assets/
   server/                  (Phase 6+) Node WebSocket server reusing src/engine
 tests/                     Vitest; files named after the rule areas
-public/images/…            Static art (moved from /images)
-legacy/                    The current prototype, read-only, deleted when Phase 3 ships
+public/images/…            Static art, served at /images/…
+assets/archive/            Old art versions, kept in git but not served or built
+legacy/                    The old prototype, read-only, deleted in Phase 4
 ```
 
 **Turn phases** are explicit in state (`turn.phase`), which replaces the scattered UI flags:
@@ -57,26 +58,29 @@ that.
 
 ---
 
-## Phase 0 — Groundwork ✅ (in progress)
+## Phase 0 — Groundwork ✅
 
 - [x] Port the rules into [RULES.md](RULES.md) with stable IDs
 - [x] Document the current state in [OVERVIEW.md](OVERVIEW.md)
 - [x] Write this roadmap and `CLAUDE.md`
-- [ ] Commit the current WIP so the prototype has a clean baseline
+- [x] Commit the current WIP so the prototype has a clean baseline
 - [x] Cross-check the clarifications against a secondary rules source (UltraBoardGames)
-- [ ] Answer the open questions `Q-01`–`Q-05` in RULES.md (monster strengths, tile counts, edition)
-- [ ] Review the clarifications `C-01`–`C-13` and mark each as confirmed
+- [ ] _Deferred:_ answer the open questions `Q-01`–`Q-05` in RULES.md (monster strengths, tile
+      counts, edition). Phase 2 uses placeholder data until then.
+- [ ] _Deferred:_ review the clarifications `C-01`–`C-13` and mark each as confirmed
 
 **Exit:** docs agreed, working tree clean.
 
-## Phase 1 — Tooling & skeleton
+## Phase 1 — Tooling & skeleton ✅
 
-- [ ] `package.json`, Vite, TypeScript (strict), Vitest, ESLint and Prettier
-- [ ] Move the prototype into `legacy/` (still runnable through XAMPP for reference)
-- [ ] Move art to `public/images/` and drop unused `backup/` folders from the build
-- [ ] Replace the Tailwind Play CDN with Tailwind compiled through Vite, keeping daisyUI
-- [ ] `.gitignore` (`node_modules`, `dist`), plus scripts `dev`, `build`, `test`, `lint`
-- [ ] Optional: GitHub Actions CI running lint and tests
+- [x] `package.json`, Vite, TypeScript (strict), Vitest, ESLint and Prettier
+- [x] Move the prototype into `legacy/` (paths repointed at `public/images/`)
+- [x] Move art to `public/images/` and the unused `backup/` folders to `assets/archive/`
+- [x] Replace the Tailwind Play CDN with Tailwind compiled through Vite, keeping daisyUI
+- [x] `.gitignore` (`node_modules`, `dist`), plus scripts `dev`, `build`, `test`, `lint`
+- [x] GitHub Actions CI: lint, format check, typecheck, tests, build
+- [x] Engine purity guardrails: `tsconfig.engine.json` (no DOM types) and ESLint bans on DOM,
+      timers, `Date` and `Math.random()` in `src/engine`
 
 **Exit:** `npm run dev` serves an empty shell, `npm test` runs, and CI is green.
 
@@ -89,7 +93,7 @@ Built test-first, with each rule ID covered by at least one test.
 - [ ] Movement over discovered tiles, with the 4-move budget (`R-TURN-*`, `R-MOVE-*`)
 - [ ] Exploration: draw, valid rotations, placement, room → bag draw (`R-EXPLORE-*`, `R-ROOM-*`)
 - [ ] Bag of 53 tokens (`§2.1`)
-- [ ] Combat: 2d6 + weapons + bolts; win, tie, loss; push back; loot (`R-COMBAT-*`)
+- [ ] Combat: 2d6 + weapons + bolts; win, tie, loss; retreat; loot (`R-COMBAT-*`, `R-RETREAT`)
 - [ ] Inventory slots, overflow drop, picking up from tiles (`R-INV-*`)
 - [ ] HP, unconsciousness and skipped turn, HF healing (`R-HP-*`, `R-HEAL-*`)
 - [ ] Keys and chests (`R-KEY-*`), teleport gates (`R-TG-*`)
@@ -172,3 +176,4 @@ Functional UI only. It should look tidy, but it doesn't need to look good yet.
 | Date | Change |
 |---|---|
 | 2026-10-22 | Roadmap created. Phase 0 started. |
+| 2026-10-22 | Phase 0 done (open questions deferred). Phase 1 done: Vite 8, TypeScript 6, Vitest 5, ESLint 10, Tailwind 4 + daisyUI 5. Next: Phase 2. |

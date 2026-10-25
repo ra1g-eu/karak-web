@@ -15,9 +15,15 @@ later.
 
 ## Current state
 
-- Phases 0–3 are done: the engine implements every rule. **Phase 4 (playable hot-seat client
-  in `src/client`) is next.** Open questions `Q-01`–`Q-06` are deferred, so use placeholder data
-  where they matter.
+- Phases 0–4 are built: the engine implements every rule, and `npm run dev` serves a playable
+  hot-seat game. **Next: a full human playtest (Phase 4's exit check), then Phase 5.** Open
+  questions `Q-01`–`Q-06` are deferred, so use placeholder data where they matter.
+- Client map and conventions: OVERVIEW §2 ("Client at a glance"). `store.ts` is the only code
+  that calls the engine, and every clickable thing comes from `legalCommands`. Build DOM with
+  `h()` from `dom.ts` so text stays text.
+- To test rare situations in the browser, build a state with the engine in the page
+  (`await import('/src/engine/index.ts')`), write it to `localStorage['karak-web:save']`, reload
+  and use "Continue saved game".
 - Engine API and module map: OVERVIEW §2–3. New rules go in `src/engine/rules/`, with tests in
   `tests/engine/<area>.test.ts` built from the scenario helpers in `tests/engine/helpers.ts`
   (`newGame`, `gameAs`, `enterFight`, `putTiles`, `stackPile`, `stackBag`, `rigDice`, `run`,
@@ -28,12 +34,11 @@ later.
 - Stack: **Vite + TypeScript (strict) + Vitest**, Tailwind 4 + daisyUI 5. The engine goes in
   `src/engine` (pure), the UI in `src/client`, tests in `tests/`, and later a Node WebSocket
   server in `src/server`. Art is in `public/images/` (served at `/images/…`).
-- `legacy/` holds the old prototype: tangled logic and UI, many rules missing or wrong (OVERVIEW
-  §5–7). It's reference only. Don't build on it or port its code; reimplement from RULES.md.
+- The old prototype was deleted in Phase 4 (git history up to `02581dc`).
 
 ## Commands
 
-- `npm run dev`: dev server at `http://localhost:5173/` (the prototype is at `/legacy/`)
+- `npm run dev`: dev server at `http://localhost:5173/` (the game)
 - `npm test`, `npm run lint`, `npm run typecheck`, `npm run format:check`, `npm run build`
 - Before calling work done, run lint, typecheck and tests. CI runs all of them plus the build.
 - `npm run typecheck` also checks `src/engine` without DOM types (`tsconfig.engine.json`), and

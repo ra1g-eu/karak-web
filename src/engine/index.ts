@@ -21,7 +21,7 @@ export {
 } from './queries';
 export type { CombatBreakdown } from './queries';
 export type { DiceRerollReason } from './events';
-export { coordKey, openingsOf, parseKey } from './board';
+export { coordKey, DIRS, openingsOf, parseKey, sameCoord, step } from './board';
 export { HEROES, HERO_IDS } from './data/heroes';
 export { ITEM_NAMES, TREASURE_VP, WEAPON_BONUS } from './data/items';
 export { MONSTERS } from './data/monsters';

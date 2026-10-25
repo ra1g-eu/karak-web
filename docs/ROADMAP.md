@@ -45,7 +45,7 @@ src/
 tests/                     Vitest; files named after the rule areas
 public/images/…            Static art, served at /images/…
 assets/archive/            Old art versions, kept in git but not served or built
-legacy/                    The old prototype, read-only, deleted in Phase 4
+(legacy/)                  The old prototype; deleted in Phase 4, in git history up to 02581dc
 ```
 
 **Turn phases** are explicit in state (`turn.phase`), which replaces the scattered UI flags:
@@ -113,22 +113,25 @@ Built test-first, with each rule ID covered by at least one test.
 
 **Exit:** every rule in RULES.md is implemented and tested.
 
-## Phase 4 — Playable hot-seat client
+## Phase 4 — Playable hot-seat client ✅ (exit check pending)
 
 Functional UI only. It should look tidy, but it doesn't need to look good yet.
 
-- [ ] Setup screen: player count (2–5), names, hero pick or random, starting player roll
-- [ ] Board rendering from state, with pan and zoom and centring on the active hero
-- [ ] Click-to-move with highlighting of reachable tiles and remaining moves
-- [ ] Exploration flow: clicking an open edge draws a tile; only valid rotations are offered
-- [ ] Combat dialog: dice roll, bonuses breakdown, bolt and skill choices, result
-- [ ] Loot and overflow chooser, pick up from tile, chest unlock, heal prompt
-- [ ] Curse target picker, Portal of Healing target and destination picker, TG destination picker
-- [ ] Inventory and player panels for all players, game log, end-of-game scoreboard
-- [ ] Save and load to `localStorage` (state is JSON); "new game"
-- [ ] Delete `legacy/`
+- [x] Setup screen: player count (2–5), names, hero pick or random, starting player roll
+- [x] Board rendering from state, with pan and zoom and centring on the active hero
+- [x] Click-to-move with highlighting of reachable tiles and remaining moves
+- [x] Exploration flow: clicking an open edge draws a tile; only valid rotations are offered
+- [x] Combat dialog: dice roll, bonuses breakdown, bolt and skill choices, result
+- [x] Loot and overflow chooser, pick up from tile, chest unlock, heal prompt
+- [x] Curse target picker, Portal of Healing target and destination picker, TG destination picker
+- [x] Inventory and player panels for all players, game log, end-of-game scoreboard
+- [x] Save and load to `localStorage` (state is JSON); "new game"
+- [x] Delete `legacy/`
 
 **Exit:** 2–5 people can play a full game start to dragon on one screen with no rule errors.
+Every flow was checked in the browser, using saved-game scenarios for the rare ones (Portal,
+curse, loot choice, chest, dragon and scores). A full human game from start to dragon is still
+to be played; that's the first Phase 5 playtest.
 
 ## Phase 5 — Playtest & polish gameplay
 
@@ -182,3 +185,4 @@ Functional UI only. It should look tidy, but it doesn't need to look good yet.
 | 2026-10-22 | Phase 0 done (open questions deferred). Phase 1 done: Vite 8, TypeScript 6, Vitest 5, ESLint 10, Tailwind 4 + daisyUI 5. Next: Phase 2. |
 | 2026-10-22 | Phase 2 done: engine core with 95 tests, including bot games played to the end. Added `C-14`, `C-15`, `Q-06`. Next: Phase 3. |
 | 2026-10-25 | Phase 3 done: Portal of Healing, curse, all six hero skills; 146 tests. Added `C-16`–`C-24`. Next: Phase 4 (hot-seat client). |
+| 2026-10-25 | Phase 4 built: playable hot-seat client with no framework, save/continue, all dialogs; `legacy/` deleted; 150 tests. Next: a full playtest, then Phase 5. |

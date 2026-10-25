@@ -35,12 +35,30 @@ export function chooseCommand(state: GameState, legal: Command[], bot: RngHolder
 
     switch (phase.type) {
         case 'combat': {
+            const strength = MONSTERS[phase.monster].strength;
+            const evade = find((c) => c.type === 'evade');
+            if (evade && strength >= 10 && randomInt(bot, 2) === 0) return evade;
             const roll = find((c) => c.type === 'rollDice');
             if (roll) return roll;
             const total = combatTotal(state) ?? 0;
-            const bolt = find((c) => c.type === 'useBolt');
-            if (bolt && total <= MONSTERS[phase.monster].strength) return bolt;
+            if (total <= strength) {
+                const boost =
+                    find((c) => c.type === 'reroll' && total < strength) ??
+                    find((c) => c.type === 'useBolt') ??
+                    find((c) => c.type === 'sacrifice' && me.hp > 1);
+                if (boost) return boost;
+            }
             return find((c) => c.type === 'resolveCombat') ?? pick(legal);
+        }
+        case 'choosingToken': {
+            // Fateweaver: prefer a chest, else the weakest monster.
+            const score = (c: Command) =>
+                c.type !== 'chooseToken'
+                    ? 99
+                    : c.token === 'chest'
+                      ? 0
+                      : MONSTERS[c.token].strength;
+            return [...legal].sort((a, b) => score(a) - score(b))[0] ?? pick(legal);
         }
         case 'choosingLootDrop': {
             const drops = legal.filter((c) => c.type === 'chooseLootDrop');
@@ -59,6 +77,10 @@ export function chooseCommand(state: GameState, legal: Command[], bot: RngHolder
             const heal = action('heal');
             if (heal && me.hp < me.maxHp && (me.hp <= 2 || phase.type === 'turnEnding'))
                 return heal;
+            const selfPortal = find((c) => c.type === 'castPortal' && c.targetId === me.id);
+            if (selfPortal && me.hp <= 2) return selfPortal;
+            const swap = find((c) => c.type === 'magicSwap');
+            if (swap && randomInt(bot, 20) === 0) return swap;
             const plainPickUp = find(
                 (c) => c.type === 'endTurn' && c.action?.type === 'pickUp' && !c.action.drop,
             );
@@ -88,9 +110,10 @@ export function simulate(
 ): SimulationResult {
     let { state } = createGame({
         seed,
-        players: HERO_IDS.slice(0, playerCount).map((heroId, i) => ({
+        // Rotate the hero line-up with the seed so every hero gets played.
+        players: Array.from({ length: playerCount }, (_, i) => ({
             name: `Bot ${i + 1}`,
-            heroId,
+            heroId: HERO_IDS[(seed + i) % HERO_IDS.length] as (typeof HERO_IDS)[number],
         })),
     });
     const bot: RngHolder = { rng: seed * 7919 };
@@ -131,6 +154,8 @@ export function checkInvariants(state: GameState): void {
         if (!state.board[`${p.position.x},${p.position.y}`]) fail('hero off the board');
         if (p.unconscious && p.hp !== 0) fail('unconscious with HP');
     }
+    // §2: there is one curse token.
+    if (state.players.filter((p) => p.cursed).length > 1) fail('more than one cursed hero');
     if (state.turn.movesLeft < 0 || state.turn.movesLeft > 4) fail('moves out of range');
     if (state.result && state.turn.phase.type !== 'gameOver') fail('result without gameOver');
 }

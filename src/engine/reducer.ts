@@ -1,8 +1,20 @@
 import type { Command } from './commands';
 import { type Ctx, currentPlayer, RuleError } from './context';
 import type { GameEvent } from './events';
-import { chooseLootDrop, resolveCombat, rollDice, useBolt } from './rules/combat';
-import { move, placeTile, teleport } from './rules/movement';
+import {
+    chooseFountain,
+    chooseLootDrop,
+    evade,
+    placeCurse,
+    reroll,
+    resolveCombat,
+    rollDice,
+    sacrifice,
+    useBolt,
+} from './rules/combat';
+import { magicSwap } from './rules/heroes';
+import { chooseToken, move, placeTile, teleport } from './rules/movement';
+import { castPortal } from './rules/spells';
 import { endTurnWithAction } from './rules/tileActions';
 import type { GameState } from './types';
 
@@ -42,10 +54,26 @@ function dispatch(ctx: Ctx, command: Command): void {
             return rollDice(ctx);
         case 'useBolt':
             return useBolt(ctx);
+        case 'reroll':
+            return reroll(ctx);
+        case 'sacrifice':
+            return sacrifice(ctx);
+        case 'evade':
+            return evade(ctx);
         case 'resolveCombat':
             return resolveCombat(ctx);
         case 'chooseLootDrop':
             return chooseLootDrop(ctx, command.drop);
+        case 'placeCurse':
+            return placeCurse(ctx, command.targetId);
+        case 'chooseFountain':
+            return chooseFountain(ctx, command.to);
+        case 'chooseToken':
+            return chooseToken(ctx, command.token);
+        case 'castPortal':
+            return castPortal(ctx, command.targetId, command.to);
+        case 'magicSwap':
+            return magicSwap(ctx, command.targetId);
         case 'endTurn':
             return endTurnWithAction(ctx, command.action);
     }

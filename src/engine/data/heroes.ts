@@ -6,7 +6,7 @@ export interface HeroDef {
     title: string;
 }
 
-/** §12. Skills arrive in Phase 3. */
+/** §12. Skills live in the rules modules and are gated by hasSkill (rules/heroes.ts). */
 export const HEROES: Readonly<Record<HeroId, HeroDef>> = {
     warrior: { id: 'warrior', name: 'Horan', title: 'the Warrior' },
     thief: { id: 'thief', name: 'Aderyn', title: 'the Thief' },

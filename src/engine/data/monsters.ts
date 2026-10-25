@@ -37,7 +37,7 @@ export const MONSTERS: Readonly<Record<MonsterId, MonsterDef>> = {
         count: 12,
         loot: { type: 'item', item: 'key' },
     },
-    // Phase 3 adds the curse that a Mummy's slayer places (R-CURSE-1).
+    // Its slayer also places the curse (R-CURSE-1, rules/combat.ts).
     mummy: {
         id: 'mummy',
         name: 'Mummy',

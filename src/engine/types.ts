@@ -77,11 +77,32 @@ export type Phase =
           /** Null until the dice are rolled. */
           dice: [number, number] | null;
           boltsUsed: number;
+          /** Warrior's Double Attack used this combat. */
+          rerolled: boolean;
+          /** Warlock's Sacrifice used this combat. */
+          sacrificed: boolean;
+          /** The fight started on the first move of the turn (Oracle's Farseeing, C-24). */
+          firstMove: boolean;
       }
-    | { type: 'choosingLootDrop'; loot: ItemId; at: Coord }
+    | {
+          type: 'choosingLootDrop';
+          loot: ItemId;
+          at: Coord;
+          monster: MonsterId;
+          after: AfterCombat;
+      }
+    /** A Mummy was slain: the slayer places or moves the curse (R-CURSE-1). */
+    | { type: 'choosingCurseTarget'; after: AfterCombat }
+    /** Warrior's Reincarnation: pick a revealed fountain to wake up at (C-20). */
+    | { type: 'choosingFountain' }
+    /** Oracle's Fateweaver: keep one of two drawn tokens (C-22). */
+    | { type: 'choosingToken'; at: Coord; options: BagToken[] }
     /** Combat is over; only EndTurn is allowed (R-COMBAT-END). */
     | { type: 'turnEnding' }
     | { type: 'gameOver' };
+
+/** How the turn goes on once a won fight's choices are made. */
+export type AfterCombat = 'endTurn' | 'continueTurn';
 
 export interface TurnState {
     movesLeft: number;

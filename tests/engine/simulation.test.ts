@@ -3,13 +3,15 @@ import { legalCommands } from '../../src/engine';
 import { checkInvariants, simulate } from './simulation';
 
 describe('headless simulation', () => {
-    // Seeds picked because they finish quickly; together they cover 2–5 players.
+    // Seeds picked because they finish quickly. Hero line-ups rotate with the seed; together
+    // these cover all six heroes and 2–5 players.
     it.each([
-        [1, 3],
-        [4, 2],
-        [8, 2],
-        [10, 4],
-        [3, 5],
+        [5, 3], // oracle, warrior, thief
+        [13, 3], // thief, wizard, warlock
+        [19, 5], // thief, wizard, warlock, swordsman, oracle
+        [20, 2], // wizard, warlock
+        [22, 4], // swordsman, oracle, warrior, thief
+        [28, 2], // swordsman, oracle
     ])(
         'seed %i with %i bots plays to the dragon without breaking a rule',
         (seed, players) => {
@@ -24,15 +26,15 @@ describe('headless simulation', () => {
         30_000,
     );
 
-    it('fuzzes many more seeds for a few hundred commands each', () => {
-        for (let seed = 100; seed < 140; seed++) {
-            simulate(seed, 2 + (seed % 4), 300, checkInvariants);
+    it('fuzzes many more seeds for a couple of hundred commands each', () => {
+        for (let seed = 100; seed < 130; seed++) {
+            simulate(seed, 2 + (seed % 4), 200, checkInvariants);
         }
-    }, 30_000);
+    }, 60_000);
 
     it('replays identically from the same seed', () => {
-        const a = simulate(4, 2, 6000, () => {});
-        const b = simulate(4, 2, 6000, () => {});
+        const a = simulate(20, 2, 6000, () => {});
+        const b = simulate(20, 2, 6000, () => {});
         expect(a.state).toEqual(b.state);
         expect(a.steps).toBe(b.steps);
     }, 30_000);

@@ -288,6 +288,15 @@ Where the rulebook is silent, the engine follows these until changed. Status val
 | `C-13` | Healing is optional | Ending a turn on an HF lets the player **choose** whether to heal. This includes retreating onto an HF after a fight: the turn ends because of the fight, and the hero may still heal. | supported (UBG) |
 | `C-14` | Tile actions after combat | After a fight the only tile action allowed before the turn ends is healing (`C-13`). Opening a chest or picking up an item needs a turn that didn't end in combat. | proposed |
 | `C-15` | Placing a drawn tile | A drawn tile must be placed; it can't be put back, and nothing else can happen until it is. No move is spent until it's placed. | proposed |
+| `C-16` | Portal of Healing timing | Castable whenever the caster is free to act: between moves, or after a fight before the turn ends. Not mid-fight, while placing a tile, or during another choice. It also wakes an unconscious target. | proposed |
+| `C-17` | Thief's Stealth | She decides before rolling. Evading leaves her on the monster's tile, which she may leave by a normal move or even end her turn on; starting a turn there doesn't start a fight. If she later retreats and every tile on her path holds a monster, she ends on her turn's first tile. | proposed |
+| `C-18` | Wizard's bolts | Bolts aren't discarded, but each carried bolt adds +1 at most once per fight. | proposed |
+| `C-19` | Swordsman's skills | Both are automatic: 1s are always rerolled, and a 6 on either final die always lets the turn go on with the moves left. Unstoppable doesn't apply if he was knocked out. | proposed |
+| `C-20` | Warrior's Reincarnation | At 0 HP he picks any revealed fountain, wakes there at full HP, and skips the retreat. The turn still ends (he may only end it). | proposed |
+| `C-21` | Warlock's skills | Sacrifice comes after the roll; giving his last HP knocks him out but the fight still resolves. Magic Swap must be the turn's first action, triggers no fight at the new tile, and leaves him only able to end the turn (with a tile action there). | proposed |
+| `C-22` | Oracle's Fateweaver | The returned token goes back into the bag and the bag is reshuffled. With only one token left, she draws normally. | proposed |
+| `C-23` | Placing the curse | With no curse in play, the Mummy's slayer must curse another player. Once it's in play, they may move it to another player (never themself) or leave it. A cursed slayer can pass it on. | proposed |
+| `C-24` | Oracle's Farseeing | Applies when the fight starts on the move that was her first this turn, including a room she explored on that move. | proposed |
 
 ### 13.1 Open questions
 
@@ -298,7 +307,7 @@ Where the rulebook is silent, the engine follows these until changed. Status val
 | `Q-03` | Count the 80 tiles by shape and kind (tunnel, room, TG, HF). |
 | `Q-04` | Is the dragon in the bag from the start, or added later? The rulebook implies from the start. |
 | `Q-05` | Edition: UBG lists **7 heroes and 30 HP tokens**, adding the Warrior Princess (*Dual Attack*, *Aggressive Movement*), so its edition supports 6 players. This spec keeps the 6 original heroes and 2–5 players. The Warrior Princess goes with the Phase 9 custom content unless we decide otherwise. |
-| `Q-06` | What if the dungeon closes off (no open edge left to explore) while the dragon is still in the bag? The game could never end. It hasn't happened in simulations with the placeholder tiles, but the real tile mix may differ. |
+| `Q-06` | What if the dungeon closes off (no open edge left to explore) while the dragon is still in the bag? The game could never end. It hasn't happened in simulations with the placeholder tiles, but the dungeon has closed off with 31 tiles still in the pile (the dragon was already out that time), so the real tile mix may well make it possible. |
 
 ---
 

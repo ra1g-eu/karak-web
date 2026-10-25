@@ -1,7 +1,8 @@
 # Project Overview — Current State
 
-_Updated 2026-10-22 after Phase 2 (engine core) of [ROADMAP.md](ROADMAP.md). The engine plays
-complete games headlessly; the browser app is still an empty shell. Sections 4–7 describe the old
+_Updated 2026-10-25 after Phase 3 (heroes, spells, curse) of [ROADMAP.md](ROADMAP.md). The
+engine implements every rule and plays complete games headlessly; the browser app is still an
+empty shell. Sections 4–7 describe the old
 prototype, now in `legacy/`._
 
 ## 1. What this is
@@ -40,13 +41,18 @@ Gameplay comes first and visual design later.
 - `createGame({ seed, players })` returns the starting state. `applyCommand(state, command)`
   returns `{ ok, state, events }` or `{ ok: false, code, error }`, and never changes its input.
 - The active player's situation is `state.turn.phase`: `awaitingAction`, `placingTile`, `combat`,
-  `choosingLootDrop`, `turnEnding` (after a fight) or `gameOver`.
+  `choosingLootDrop`, `choosingCurseTarget`, `choosingFountain` (Warrior's Reincarnation),
+  `choosingToken` (Oracle's Fateweaver), `turnEnding` (after a fight) or `gameOver`.
 - `legalCommands(state)` lists every command the active player may send. It filters candidates
-  through `applyCommand`, so it can't disagree with the rules.
+  through `applyCommand`, so it can't disagree with the rules. `combatBreakdown(state)` splits
+  a fight's total into dice, weapons, bolts and skill bonuses for the UI.
 - Tile actions (heal, open chest, pick up) are options of the `endTurn` command, because each of
   them ends the turn (`R-END-2`).
-- Done: everything in RULES.md except Portal of Healing, the curse and hero skills (Phase 3).
-  Monster strengths and the tile mix are placeholders (`Q-02`, `Q-03`).
+- Hero skills: optional ones are commands (`reroll`, `evade`, `sacrifice`, `magicSwap`);
+  automatic ones apply by themselves (Backstab, Magical Affinity, Astral Walking, Combat
+  Training, Unstoppable, Farseeing). Every skill checks the curse via `hasSkill`.
+- Done: every rule in RULES.md. Monster strengths and the tile mix are placeholders (`Q-02`,
+  `Q-03`).
 
 **Old prototype** (`legacy/`): plain ES modules with the Tailwind Play CDN runtime. Open
 `legacy/index.html` through any static server, for example `http://localhost:5173/legacy/` while
@@ -69,8 +75,10 @@ src/
     rng.ts                 Seeded mulberry32; its state lives in GameState.rng
     context.ts             RuleError, per-command working context, phase guard
     data/                  tiles (placeholder mix), monsters, items, heroes
-    rules/                 movement (+ exploring, teleport), combat, inventory,
-                           tileActions (heal, chest, pick up), turn, scoring
+    rules/                 movement (+ exploring, teleport, Fateweaver), combat (+ combat
+                           skills, curse, Reincarnation), heroes (hasSkill, Magic Swap),
+                           spells (Portal of Healing), inventory, tileActions (heal, chest,
+                           pick up), turn, scoring
   client/main.ts           Renders the placeholder shell
   client/styles.css        Tailwind + daisyUI entry
 tests/engine/              Vitest: one file per rule area, plus helpers.ts and a bot

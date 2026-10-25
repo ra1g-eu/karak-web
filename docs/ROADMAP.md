@@ -104,11 +104,12 @@ Built test-first, with each rule ID covered by at least one test.
 
 **Exit:** a complete game can be played from the test console by sending commands.
 
-## Phase 3 — Heroes, spells, curse
+## Phase 3 — Heroes, spells, curse ✅
 
-- [ ] ~~Magic Bolt~~ (done in Phase 2 with combat), Portal of Healing (`R-BOLT-1`, `R-PORTAL-*`)
-- [ ] Curse placement, effects and lifting (`R-CURSE-*`)
-- [ ] All six heroes and their skills (§12), each with dedicated tests, including the cursed case
+- [x] Magic Bolt (done in Phase 2 with combat), Portal of Healing (`R-BOLT-1`, `R-PORTAL-*`)
+- [x] Curse placement, effects and lifting (`R-CURSE-*`)
+- [x] All six heroes and their skills (§12), each with dedicated tests, including the cursed case
+- [x] Simulation bots use every skill; hero line-ups rotate so all six get played
 
 **Exit:** every rule in RULES.md is implemented and tested.
 
@@ -180,3 +181,4 @@ Functional UI only. It should look tidy, but it doesn't need to look good yet.
 | 2026-10-22 | Roadmap created. Phase 0 started. |
 | 2026-10-22 | Phase 0 done (open questions deferred). Phase 1 done: Vite 8, TypeScript 6, Vitest 5, ESLint 10, Tailwind 4 + daisyUI 5. Next: Phase 2. |
 | 2026-10-22 | Phase 2 done: engine core with 95 tests, including bot games played to the end. Added `C-14`, `C-15`, `Q-06`. Next: Phase 3. |
+| 2026-10-25 | Phase 3 done: Portal of Healing, curse, all six hero skills; 146 tests. Added `C-16`–`C-24`. Next: Phase 4 (hot-seat client). |

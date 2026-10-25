@@ -11,8 +11,10 @@ import {
 } from '../board';
 import { type Ctx, currentPlayer, fail, requirePhase } from '../context';
 import { getTileType } from '../data/tiles';
-import type { Coord, Dir, Rotation } from '../types';
+import { shuffle } from '../rng';
+import type { BagToken, Coord, Dir, Rotation } from '../types';
 import { startCombat } from './combat';
+import { hasSkill } from './heroes';
 
 function spendMoveTo(ctx: Ctx, to: Coord): void {
     const { state } = ctx;
@@ -38,8 +40,10 @@ export function move(ctx: Ctx, dir: Dir): void {
     const target = tileAt(state, to);
 
     if (target) {
-        // R-MOVE-1
-        if (!isConnected(state, from, dir)) fail('wall', 'A wall blocks the way');
+        // R-MOVE-1; Wizard's Astral Walking ignores walls between discovered tiles.
+        if (!isConnected(state, from, dir) && !hasSkill(player, 'wizard')) {
+            fail('wall', 'A wall blocks the way');
+        }
         spendMoveTo(ctx, to);
         ctx.events.push({ type: 'heroMoved', playerId: player.id, from, to });
         // R-MOVE-3, C-10
@@ -95,14 +99,48 @@ export function placeTile(ctx: Ctx, rotation: Rotation): void {
 
 function drawFromBag(ctx: Ctx, at: Coord): void {
     const { state } = ctx;
-    const tile = tileAt(state, at);
-    if (!tile) throw new Error('Room tile missing');
+    const player = currentPlayer(state);
+    // Oracle's Fateweaver (C-22): draw two, keep one.
+    if (hasSkill(player, 'oracle') && state.bag.length >= 2) {
+        const options = [state.bag.pop(), state.bag.pop()] as BagToken[];
+        state.turn.phase = { type: 'choosingToken', at: { ...at }, options };
+        ctx.events.push({
+            type: 'tokensDrawn',
+            playerId: player.id,
+            options: [...options],
+            at: { ...at },
+        });
+        return;
+    }
     const token = state.bag.pop();
     if (!token) {
         // C-06
         ctx.events.push({ type: 'bagEmpty', at: { ...at } });
         return;
     }
+    placeToken(ctx, at, token);
+}
+
+/** Fateweaver: place the chosen token; the other goes back into the bag, which is reshuffled. */
+export function chooseToken(ctx: Ctx, token: BagToken): void {
+    const { state } = ctx;
+    const phase = requirePhase(state, 'choosingToken');
+    const index = phase.options.indexOf(token);
+    if (index < 0) fail('bad-token', 'Choose one of the two drawn tokens');
+    const returned = phase.options.filter((_, i) => i !== index);
+    state.bag.push(...returned);
+    shuffle(state, state.bag);
+    for (const t of returned) {
+        ctx.events.push({ type: 'tokenReturned', playerId: currentPlayer(state).id, token: t });
+    }
+    state.turn.phase = { type: 'awaitingAction' };
+    placeToken(ctx, phase.at, token);
+}
+
+function placeToken(ctx: Ctx, at: Coord, token: BagToken): void {
+    const { state } = ctx;
+    const tile = tileAt(state, at);
+    if (!tile) throw new Error('Room tile missing');
     ctx.events.push({
         type: 'tokenDrawn',
         playerId: currentPlayer(state).id,

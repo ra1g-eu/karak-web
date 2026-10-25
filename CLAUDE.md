@@ -15,11 +15,14 @@ later.
 
 ## Current state
 
-- Phases 0–2 are done; **Phase 3 (Portal of Healing, curse, hero skills) is next**. Open
-  questions `Q-01`–`Q-06` are deferred, so use placeholder data where they matter.
+- Phases 0–3 are done: the engine implements every rule. **Phase 4 (playable hot-seat client
+  in `src/client`) is next.** Open questions `Q-01`–`Q-06` are deferred, so use placeholder data
+  where they matter.
 - Engine API and module map: OVERVIEW §2–3. New rules go in `src/engine/rules/`, with tests in
   `tests/engine/<area>.test.ts` built from the scenario helpers in `tests/engine/helpers.ts`
-  (`newGame`, `putTiles`, `stackPile`, `stackBag`, `rigDice`, `run`, `expectRejected`).
+  (`newGame`, `gameAs`, `enterFight`, `putTiles`, `stackPile`, `stackBag`, `rigDice`, `run`,
+  `expectRejected`). `newGame` seats the Warlock first because its skills only act on command,
+  so base-rule tests stay free of hero effects.
 - `tests/engine/simulation.ts` is a bot that plays full games and checks invariants after every
   command. Extend `checkInvariants` and the bot when adding rules.
 - Stack: **Vite + TypeScript (strict) + Vitest**, Tailwind 4 + daisyUI 5. The engine goes in
